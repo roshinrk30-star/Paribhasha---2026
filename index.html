@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>PARIBHASHA 2026</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paribhasha</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Hind:wght@600;700&family=Meera&display=swap');
+        
+        :root { 
+            --main-lilac: #a78bfa; 
+            --deep-purple: #7c3aed;
+            --soft-white: #ffffff;
+            --bg-lavender: #f5f3ff;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        body { 
+            margin: 0; font-family: 'Quicksand', sans-serif; 
+            background: linear-gradient(-45deg, #ffffff, #f5f3ff, #ede9fe, #ffffff);
+            background-size: 400% 400%; animation: meshMove 15s ease infinite;
+            color: var(--deep-purple); min-height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; overflow-x: hidden; 
+        }
+        @keyframes meshMove { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+
+        .heart { position: fixed; font-size: 1.2rem; color: var(--main-lilac); opacity: 0.4; z-index: -1; animation: floatUp linear infinite; }
+        @keyframes floatUp { from { transform: translateY(110vh) rotate(0deg); } to { transform: translateY(-10vh) rotate(360deg); } }
+
+        /* Navigation */
+        .nav-icon { position: fixed; top: 20px; background: var(--soft-white); border: 2px solid #f3f0ff; padding: 12px; border-radius: 50%; cursor: pointer; z-index: 1000; box-shadow: 0 4px 12px rgba(167, 139, 250, 0.1); transition: 0.3s; }
+        .nav-icon:active { transform: scale(0.9); }
+        #musicBtn { left: 20px; }
+        #msgBoardBtn { right: 20px; }
+
+        .status-bar { margin-top: 60px; text-align: center; width: 85%; max-width: 400px; }
+        .stats-row { display: flex; justify-content: center; gap: 20px; margin-top: 12px; font-weight: 700; font-size: 0.85rem; color: var(--main-lilac); letter-spacing: 1px; }
+
+        .screen { 
+            display: none; width: 85%; max-width: 400px; padding: 30px; 
+            background: var(--glass); backdrop-filter: blur(20px); border-radius: 40px; 
+            margin-top: 20px; text-align: center; box-shadow: 0 20px 40px rgba(167, 139, 250, 0.12); border: 2px solid white;
+        }
+        .active { display: block; animation: softSlide 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes softSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-weight: 700; font-size: 2.4rem; margin: 0; color: var(--deep-purple); letter-spacing: 3px; }
+
+        .category-card { 
+            background: var(--soft-white); padding: 22px; margin: 16px 0; border-radius: 25px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            cursor: pointer; transition: 0.3s; font-weight: 700; border: 2px solid #f3f0ff; color: var(--deep-purple);
+        }
+        .category-card:active { transform: scale(0.96); border-color: var(--main-lilac); }
+        .locked { opacity: 0.5; cursor: default; background: #fafafa; border-style: dashed; }
+
+        /* Message Drawer */
+        #messageDrawer {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 45vh;
+            background: linear-gradient(to bottom, #ffffff, #f9f8ff); border-radius: 45px 45px 0 0; 
+            z-index: 2000; transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1); padding: 40px; 
+            box-sizing: border-box; text-align: center; box-shadow: 0 -15px 40px rgba(167, 139, 250, 0.15);
+        }
+        .drawer-line { width: 45px; height: 5px; background: #ede9fe; border-radius: 10px; margin: 0 auto 25px; }
+
+        /* Typography */
+        .v-m { font-weight: 700; font-size: 1.2rem; color: var(--deep-purple); margin-bottom: 8px; }
+        .v-kn { font-family: 'Meera', sans-serif; color: var(--main-lilac); font-size: 1.1rem; margin: 8px 0; }
+        .v-e { font-style: italic; font-size: 0.95rem; color: var(--main-lilac); opacity: 0.8; }
+
+        button { 
+            padding: 18px; width: 100%; border-radius: 35px; border: none;
+            background: var(--main-lilac); color: white; font-weight: 700; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 6px 20px rgba(167, 139, 250, 0.3); font-size: 1rem;
+        }
+        button:active { transform: scale(0.98); background: var(--deep-purple); }
+
+        input { width: 85%; padding: 16px; border-radius: 30px; border: 2px solid #f3f0ff; text-align: center; font-size: 1.1rem; font-weight: 700; color: var(--deep-purple); margin-bottom: 25px; outline: none; background: white; transition: 0.3s; }
+        input:focus { border-color: var(--main-lilac); }
+    </style>
+</head>
+<body>
+
+<div id="musicBtn" class="nav-icon" onclick="toggleMusic()">🔇</div>
+<div id="msgBoardBtn" class="nav-icon" onclick="toggleDrawer()">✉️</div>
+<audio id="bgMusic" preload="auto"></audio>
+
+<div id="messageDrawer">
+    <div class="drawer-line"></div>
+    <h3 style="color: var(--main-lilac); margin-bottom: 20px; font-weight: 700;">A Whisper for You</h3>
+    <div id="drawerContent" style="font-size: 1.2rem; line-height: 1.6; color: var(--deep-purple); font-weight: 600;"></div>
+    <button onclick="toggleDrawer()" style="margin-top: 35px; background: #ffffff; color: var(--main-lilac); border: 2px solid #f3f0ff; box-shadow: none;">Back to Game</button>
+</div>
+
+<div class="status-bar">
+    <div id="dateDisp" style="font-weight: 700; color: var(--main-lilac); opacity: 0.8; font-size: 0.85rem; letter-spacing: 1px;"></div>
+    <div id="specialAlert" style="margin-top: 15px; color: var(--deep-purple); font-weight: 700; font-size: 1rem; min-height: 1.4rem; padding: 0 20px;"></div>
+    <div class="stats-row">
+        <span>SCORE: <span id="ptsDisp">0</span></span>
+        <span>STREAK: <span id="streakDisp">0</span> 🔥</span>
+    </div>
+</div>
+
+<div id="home" class="screen">
+    <h1>Paribhasha</h1>
+    <div id="menuOptions" style="margin-top: 25px;">
+        <div id="cat-lang" class="category-card" onclick="startMode('lang')"><span>Secret Cipher</span><span class="status-slot">🔒</span></div>
+        <div id="cat-movies" class="category-card" onclick="startMode('movies')"><span>Cinema Lore</span><span class="status-slot">🔒</span></div>
+        <div id="cat-history" class="category-card" onclick="startMode('history')"><span>Heritage Path</span><span class="status-slot">🔒</span></div>
+    </div>
+    <div class="poetry-box" id="dailyPoem" style="margin-top: 30px;"></div>
+</div>
+
+<div id="game" class="screen">
+    <div id="langUI">
+        <h2 id="scrambled" style="color: var(--main-lilac); font-size: 2rem; letter-spacing: 6px; margin-bottom: 25px; font-weight: 700;"></h2>
+        <input type="text" id="ans" placeholder="Decrypt the word...">
+        <button onclick="checkAnswer()">Unlock</button>
+    </div>
+    <div id="quizUI">
+        <p id="qText" style="font-weight: 700; line-height: 1.5; margin-bottom: 30px; color: var(--deep-purple); font-size: 1.1rem;"></p>
+        <div id="opts"></div>
+    </div>
+</div>
+
+<div id="result" class="screen">
+    <h2 id="resH" style="font-weight: 700; color: var(--deep-purple); font-size: 1.6rem;"></h2>
+    <div id="resPoem" class="poetry-box" style="margin-top: 20px;"></div>
+    <button onclick="goHome()" style="margin-top: 35px;">Back Home</button>
+</div>
+
+<script>
+// --- DATABASE ---
+const playlist = [
+    "https://files.catbox.moe/8dzz0u.mp3", "https://files.catbox.moe/j828xt.mp3", "https://files.catbox.moe/lcnx6q.mp3",
+    "https://files.catbox.moe/qfj27d.mp3", 
+  "https://files.catbox.moe/4ri75m.mp3",
+  "https://files.catbox.moe/wkk6vt.mp3", "https://files.catbox.moe/7eh9k1.mp3", "https://files.catbox.moe/f8gv0o.mp3", "https://files.catbox.moe/osaf1a.mp3", "https://files.catbox.moe/p8mfj6.mp3", "https://files.catbox.moe/vuj269.mp3",
+  "https://files.catbox.moe/bn9too.mp3", "https://files.catbox.moe/nmerxo.mp3",
+    "https://files.catbox.moe/ij3z5g.mp3", "https://files.catbox.moe/7x12tz.mp3", "https://files.catbox.moe/ad8fyf.mp3",
+    "https://files.catbox.moe/39ljqb.mp3", "https://files.catbox.moe/5mz5fu.mp3"
+];
+
+const guestMessages = [
+    {from: "Rosh", msg: "You are the center of my universe, Pariii.💫"},
+    {from: "Aai", msg: "बाळा, खूप प्रगती कर. आमचे आशीर्वाद तुझ्यासोबत आहेत. "},
+    {from: "Sochu", msg: "Keep shining, Parii! Bangalore is lucky to have you. ✨"},
+    {from: "Pappa", msg: "जिद्द आणि मेहनत सोडू नकोस. यशस्वी हो! "},
+    {from: "Bhavsiii", msg: "Pariii! Stay awesome and keep that smile forever! 🌸"}, 
+    {from: "Rosh", msg: "Just a reminder that you are my favorite thought, every single day."},
+    {from: "Rosh", msg: "I hope you're looking at the same moon I am tonight. I'm with you, always."},
+    {from: "Rosh", msg: "The way you handle everything with such grace makes me so proud to be yours."},
+    {from: "Rosh", msg: "You don't have to be perfect, Parii. You just have to be you."},
+    {from: "Rosh", msg: "Your happiness is the only thing on my wishlist this year."},
+    {from: "Rosh", msg: "Distance is just a test to see how far love can travel. We're winning."},
+    {from: "Rosh", msg: "I’m so lucky that of all the people in the world, I found you."},
+    {from: "Rosh", msg: "Take a deep breath. You’re doing much better than you think."},
+    {from: "Rosh", msg: "Thinking of your smile—it’s the only light I need."},
+    {from: "Rosh", msg: "You are my home, no matter which city you are in."},
+    {from: "Rosh", msg: "I'll always be the one cheering the loudest for you from the sidelines."},
+    {from: "Rosh", msg: "In my eyes, you are the most beautiful soul to ever exist."},
+    {from: "Rosh", msg: "Even when it's hard, remember that I’m holding your hand in spirit."},
+    {from: "Rosh", msg: "I love the person you are becoming. Keep growing, my queen."},
+    {from: "Rosh", msg: "You have a strength in you that is so quiet yet so powerful."},
+    {from: "Rosh", msg: "I can’t wait for the day we don’t have to say goodbye anymore."},
+    {from: "Rosh", msg: "You are the best thing that ever happened to me, Parii."},
+    {from: "Rosh", msg: "I hope Bangalore is treating my favorite person with kindness today."},
+    {from: "Rosh", msg: "Just checking in to say I love you more than words can carry."},
+    {from: "Rosh", msg: "Rest easy tonight. You’ve done enough for today."},
+
+    // --- AAI (20 Messages) ---
+    {from: "Aai", msg: "बाळा, वेळेवर जेवण कर. तुझी प्रकृती सांभाळ. खूप आठवण येते तुझी."},
+    {from: "Aai", msg: "तू जिथे कुठे असशील, आमचे आशीर्वाद नेहमी तुझ्या पाठीशी आहेत."},
+    {from: "Aai", msg: "खूप प्रगती कर, पण स्वतःसाठी वेळ काढायला विसरू नकोस."},
+    {from: "Aai", msg: "माझी लेक खूप खंबीर आहे, मला तुझा खूप अभिमान वाटतो."},
+    {from: "Aai", msg: "आज तुझा आवडता पदार्थ केला की तुझीच आठवण येते."},
+    {from: "Aai", msg: "काहीही झालं तरी खचून जाऊ नकोस, तुझी आई तुझ्यासाठी नेहमी इथे आहे."},
+    {from: "Aai", msg: "देवाकडे रोज तुझ्या सुखासाठीच प्रार्थना करते."},
+    {from: "Aai", msg: "आरोग्याची काळजी घे, तेलकट खाऊ नकोस जास्त."},
+    {from: "Aai", msg: "तू घरची घरपण आहेस, तुझ्याशिवाय घर अगदी शांत वाटतं."},
+    {from: "Aai", msg: "यशस्वी हो, पण साधेपणा सोडू नकोस बाळ."},
+    {from: "Aai", msg: "तुझ्या डोळ्यात कधीच पाणी येऊ नये, इतकंच वाटतं मला."},
+    {from: "Aai", msg: "तू खूप शूर आहेस, एकटी तिकडे राहून सगळं सांभाळतेयस."},
+    {from: "Aai", msg: "स्वतःवर विश्वास ठेव, तू सगळं काही साध्य करू शकतेस."},
+    {from: "Aai", msg: "तुझं हसणं म्हणजे माझ्यासाठी जगातील सगळ्यात मोठं सुख आहे."},
+    {from: "Aai", msg: "खूप शिक, खूप मोठी हो, पण मनाची माया जपत राहा."},
+    {from: "Aai", msg: "तुझ्या प्रत्येक निर्णयामध्ये मी तुझ्या सोबत आहे."},
+    {from: "Aai", msg: "आज थोडा वेळ स्वतःसाठी काढ आणि शांत झोप घे."},
+    {from: "Aai", msg: "तुझ्या यशाच्या बातम्या ऐकताना आमची छाती अभिमानाने भरून येते."},
+    {from: "Aai", msg: "तुला खूप प्रेम आणि आशीर्वाद, माझी लाडकी परी."},
+    {from: "Aai", msg: "काळजी नको करू, सगळं चांगलं होईल. आम्ही आहोत ना!"},
+
+    // --- SOCHU/Brother (20 Messages) ---
+    {from: "Sochu", msg: "Taii, don't work too hard. Remember to have some fun too!"},
+    {from: "Sochu", msg: "You're the coolest sister anyone could ask for. Miss you!"},
+    {from: "Sochu", msg: "Sending you some positive vibes for your big project today, Taii."},
+    {from: "Sochu", msg: "If anyone bothers you in Bangalore, just tell me. Your brother is here!"},
+    {from: "Sochu", msg: "Keep chasing your dreams, Taii. I know you'll make it big."},
+    {from: "Sochu", msg: "Missing our random chats and snacks together. Come home soon!"},
+    {from: "Sochu", msg: "Taii, you’re an inspiration to me. Keep being awesome."},
+    {from: "Sochu", msg: "Don't skip breakfast! I know how you are when you're busy."},
+    {from: "Sochu", msg: "You’re doing a great job, Taii. Take it one day at a time."},
+    {from: "Sochu", msg: "Just wanted to say I’m proud of my big sister today."},
+    {from: "Sochu", msg: "Can't wait to see you soon. The house is boring without you."},
+    {from: "Sochu", msg: "Be brave, Taii. You’ve got this!"},
+    {from: "Sochu", msg: "Treat yourself to something nice today. You deserve it."},
+    {from: "Sochu", msg: "I’m always just a call away if you need to vent."},
+    {from: "Sochu", msg: "Hope you’re making lots of friends and memories in the new city."},
+    {from: "Sochu", msg: "Taii, remember to stay hydrated and sleep well!"},
+    {from: "Sochu", msg: "You're smart, kind, and capable. Never forget that."},
+    {from: "Sochu", msg: "Sending you a big virtual hug, Taii!"},
+    {from: "Sochu", msg: "I'll make sure to save some sweets for you when you visit."},
+    {from: "Sochu", msg: "Good luck with everything today. Go get 'em, Taii!"},
+
+    // --- PAPPA (5 Messages) ---
+    {from: "Pappa", msg: "लेकी, जिद्द सोडू नकोस. तुझं कष्ट नक्कीच फळाला येईल."},
+    {from: "Pappa", msg: "यश आणि अपयश या पलीकडे तुझं सुख आमच्यासाठी महत्त्वाचं आहे."},
+    {from: "Pappa", msg: "खंबीर राहा, संकटांना घाबरू नकोस. माझा आशीर्वाद कायम आहे."},
+    {from: "Pappa", msg: "तुझ्या कर्तृत्वावर माझा पूर्ण विश्वास आहे. मोठी हो!"},
+    {from: "Pappa", msg: "आमची लेक वाघीण आहे, तिला कोणाचीच भीती नाही. काळजी घे."},
+
+    // --- BEST FRIENDS (5 Messages) ---
+    {from: "Bhavsiii", msg: "Pariii! Missing our long calls. Shine bright, queen! 💖"},
+    {from: "Urviiii", msg: "You're killing it in Bangalore! So proud of you, babe. ✨"},
+    {from: "Bhavsiii", msg: "Don't forget to smile today, you look best when you do!"},
+    {from: "Urviiii", msg: "Distance means nothing when friendship is this deep. Love ya!"},
+    {from: "Bhavsiii", msg: "Sending you a massive hug and some extra Borivali vibes!🌻"},
+
+    // --- FRIENDS (5 Messages) ---
+    {from: "Harshu & Kukku", msg: "We miss you here! Have a blast today, Pari!"},
+    {from: "Eshwaree & Chotiii", msg: "Keep glowing and growing! We are always rooting for you."},
+    {from: "Swara & Tanaya", msg: "Hope you're having the best time! Miss our gang hangouts."},
+    {from: "Hrithik & Pratham", msg: "Cheers to your new journey! Stay awesome as always."},
+    {from: "Hritika", msg: "You're doing amazing things. Keep at it, girl! 🌸"},
+
+    // --- COLLEAGUES (5 Messages) ---
+    {from: "Kinnari & Shweta", msg: "The workplace isn't the same without your energy! Work hard, stay happy."},
+    {from: "Prabha", msg: "Your dedication is inspiring. Wishing you a productive day!"},
+    {from: "Kinnari", msg: "Take small breaks, don't stress too much. You've got this!"},
+    {from: "Shweta", msg: "Hope you’re handling the new role like the pro you are!"},
+    {from: "Prabha", msg: "Success follows those who work with heart—just like you."},
+
+    // --- TODDLER COUSINS (5 Messages) ---
+    {from: "Ruhi & Mahi", msg: "Pari Taiii! We miss playing with you. Come back soon! 🧸"},
+    {from: "Ruhi", msg: "I drew a flower for you today, Taii! Love you."},
+    {from: "Mahi", msg: "Taii, please bring chocolates when you come home! ❤️"},
+    {from: "Ruhi", msg: "Missing your soft hugs, Taii. Big kisses!"},
+    {from: "Mahi", msg: "We love you so much, Pari Taiii!"},
+
+    // --- BROTHER COUSINS (5 Messages) ---
+    {from: "Kaustubh & Saurabh Dada", msg: "Proud of you, little sister. Reach for the stars!"},
+    {from: "Mihir & Manoj Dada", msg: "Take care of yourself in the big city. We're always here."},
+    {from: "Saurabh Dada", msg: "Keep up the hard work. Your brothers are rooting for you!"},
+    {from: "Manoj Dada", msg: "Be fearless. The family is behind you always."},
+    {from: "Kaustubh Dada", msg: "Wishing you strength and success in everything you touch."},
+
+    // --- COUSIN GANG (5 Messages) ---
+    {from: "Ayan, Adhi & Vihaan", msg: "Taii, you're the best! Don't forget us in the Bangalore rush."},
+    {from: "Tara & Neeti", msg: "Miss our gossip sessions! Stay beautiful, Taii."},
+    {from: "Tanmay & Chinmay", msg: "Good luck with your goals. We're following in your footsteps!"},
+    {from: "Shubham & Arya", msg: "The fun is missing without you! Hope you're happy there."},
+    {from: "Tara", msg: "Stay sweet, stay strong. You are our favorite, Taii!"}
+];
+
+ 
+
+
+  
+  const library = [
+    // --- KANNADA: SOCIAL & OUTDOOR (English Script) ---
+    {m:"तुम्ही कन्नड शिकवू शकता का?", kn:"Nimage Kannada kalisikodoke aguttheya?", e:"Can you teach me Kannada? (Kannada)"},
+    {m:"मला हे खूप आवडलं.", kn:"Nanage idu tumba ishta aithu.", e:"I liked this very much. (Kannada)"},
+    {m:"पुन्हा भेटूया.", kn:"Matthe sigona.", e:"Let's meet again. (Kannada)"},
+    {m:"तिथे कसं जायचं?", kn:"Allige hege hogodu?", e:"How to go there? (Kannada)"},
+    {m:"येथे जवळ हॉटेल आहे का?", kn:"Ili hathira hotel ideya?", e:"Is there a hotel nearby? (Kannada)"},
+    {m:"खूप गर्दी आहे.", kn:"Tumba crowd ide.", e:"It's very crowded. (Kannada)"},
+    {m:"मला भूक लागली आहे.", kn:"Nanage hasivu agthide.", e:"I am feeling hungry. (Kannada)"},
+    {m:"बिल द्या.", kn:"Bill kodi.", e:"Please give the bill. (Kannada)"},
+    {m:"पाणी मिळेल का?", kn:"Neeru siguttheya?", e:"Can I get water? (Kannada)"},
+    {m:"येथे थांबा.", kn:"Ili nillisi.", e:"Stop here. (Kannada)"},
+    {m:"सरळ जा.", kn:"Nera hogi.", e:"Go straight. (Kannada)"},
+    {m:"डावीकडे आणि उजवीकडे.", kn:"Yedagade mattu Balagade.", e:"Left and Right. (Kannada)"},
+    {m:"आज सुट्टी आहे.", kn:"Ivathu rale ide.", e:"Today is a holiday. (Kannada)"},
+    {m:"मला उशीर झालाय.", kn:"Nanage thada ayithu.", e:"I am late. (Kannada)"},
+    {m:"ठीक आहे, मी बघते.", kn:"Sari, naanu nodutthene.", e:"Okay, I will see. (Kannada)"},
+    {m:"मी तुझ्यासाठी काय करू शकतो?", kn:"Njan ninakkanyi enthu cheyyanam?", e:"What should I do for you? (Malayalam)"},
+    {m:"तू माझं आयुष्य बदललंस.", kn:"Nee ente jeevitham matti marichu.", e:"You changed my life. (Malayalam)"},
+    {m:"मला फक्त तुझी साथ हवीय.", kn:"Enikku ninte koode mathram mathi.", e:"I only need your company. (Malayalam)"},
+    {m:"तुझा हात सोडणार नाही.", kn:"Ninte kai njan vidilla.", e:"I won't let go of your hand. (Malayalam)"},
+    {m:"तू खूप समजूतदार आहेस.", kn:"Nee valare thirichariyulla kuttiyanu.", e:"You are a very understanding girl. (Malayalam)"},
+    {m:"तू रडू नकोस.", kn:"Nee karayaruthe.", e:"Don't you cry. (Malayalam)"},
+    {m:"मी आहे ना तुझा.", kn:"Njan nintentethalle.", e:"Am I not yours? (Malayalam)"},
+    {m:"तू माझ्या स्वप्नात आलीस.", kn:"Nee ente swapnathil vannu.", e:"You came in my dreams. (Malayalam)"},
+    {m:"तुझं मन खूप मोठं आहे.", kn:"Ninte manassu valuthannu.", e:"Your heart is big. (Malayalam)"},
+    {m:"मला तुझा खूप अभिमान वाटतो.", kn:"Enikku ninne patti orupaadu abhimanamundu.", e:"I feel very proud of you. (Malayalam)"},
+    {m:"तू माझ्या जगातील सर्वात सुंदर गोष्ट आहेस.", kn:"Nee ente lokathile ettavum nalla karyamanu.", e:"You are the best thing in my world. (Malayalam)"},
+    {m:"काय विचार करतेयस?", kn:"Enthannu chindikkunnathu?", e:"What are you thinking? (Malayalam)"},
+    {m:"सावकाश जेवण कर.", kn:"Bakshanam pathiye kazhikku.", e:"Eat your food slowly. (Malayalam)"},
+    {m:"नेहमी हसत राहा.", kn:"Eppozhum chirichu kondirikkuka.", e:"Keep smiling always. (Malayalam)"},
+    {m:"तुझ्याशिवाय वेळ जात नाही.", kn:"Nee illathe samayam povunnilla.", e:"Time doesn't pass without you. (Malayalam)"},
+
+    {m:"कमी तिखट करा.", kn:"Swalpa khara kammi maadi.", e:"Make it less spicy. (Kannada)"},
+    {m:"मला हे नकोय.", kn:"Nanage idu beda.", e:"I don't want this. (Kannada)"},
+    {m:"काही हरकत नाही.", kn:"Parvagilla.", e:"No problem / It's okay. (Kannada)"},
+    {m:"मी तुला मदत करू का?", kn:"Naanu ninage sahay madala?", e:"Shall I help you? (Kannada)"},
+    {m:"तुझा फोन नंबर काय आहे?", kn:"Ninna phone number enu?", e:"What is your phone number? (Kannada)"},
+    {m:"मला कन्नड थोडे येते.", kn:"Nanage swalpa Kannada barutthe.", e:"I know a little Kannada. (Kannada)"},
+    {m:"तू चहा घेणार का?", kn:"Nee chaya kudikkumo?", e:"Will you drink tea? (Malayalam)"},
+    {m:"प्रवास कसा होता?", kn:"Yathra enganeyundayirunnu?", e:"How was the journey? (Malayalam)"},
+    {m:"मला थंडी वाजतेय.", kn:"Enikku thanukkunnu.", e:"I am feeling cold. (Malayalam)"},
+    {m:"खूप छान दिवस आहे.", kn:"Nalla divasam aanu.", e:"It's a good day. (Malayalam)"},
+    {m:"तू कुठे चालली आहेस?", kn:"Nee evideya povunnathu?", e:"Where are you going? (Malayalam)"},
+    {m:"मला समजलं.", kn:"Enikku manassilayi.", e:"I understood. (Malayalam)"},
+    {m:"मला खूप आनंद झाला.", kn:"Enikku orupaadu santhoshamayi.", e:"I am very happy. (Malayalam)"},
+    {m:"तू जेवलीस का?", kn:"Nee oota madidya?", e:"Did you eat? (Kannada)"},
+    {m:"पुन्हा सांग.", kn:"Inondu sala heli.", e:"Tell me once more. (Kannada)"},
+    {m:"तू माझी छोटी परी आहेस.", kn:"Nee nanna putta Pari.", e:"You are my little Pari. (Kannada)"},
+    {m:"तू माझं पहिलं आणि शेवटचं प्रेम आहेस.", kn:"Neenu nanna modala mattu koneya preethi.", e:"You are my first and last love. (Kannada)"},
+    {m:"तुझ्याशिवाय माझं आयुष्य अपूर्ण आहे.", kn:"Neenillade nanna jeevana apoorna.", e:"My life is incomplete without you. (Kannada)"},
+    {m:"तुझं हसणं माझं जग उजळतं.", kn:"Ninna nagu nanna lokavannu belagutthe.", e:"Your smile lights up my world. (Kannada)"},
+    {m:"मी तुझा कायमचा आहे.", kn:"Naanu endendigu ninnava.", e:"I am yours forever. (Kannada)"},
+    {m:"माझं हृदय फक्त तुझ्यासाठी धडधडतं.", kn:"Nanna hrudaya ninagaagi mathra badiyutthe.", e:"My heart beats only for you. (Kannada)"},
+    {m:"तू माझ्या आयुष्यातली सर्वात सुंदर गोष्ट आहेस.", kn:"Nanna jeevanada atyanta sundara vishaya neenu.", e:"You are the most beautiful thing in my life. (Kannada)"},
+    {m:"मला फक्त तुझी सोबत हवीय.", kn:"Nanage ninna jothe mathra beku.", e:"I only want your company. (Kannada)"},
+    {m:"तुझ्या डोळ्यात मला माझं घर दिसतं.", kn:"Ninna kannallu nanna mane kanutthe.", e:"I see my home in your eyes. (Kannada)"},
+    {m:"तू माझ्या प्रत्येक प्रार्थनेत आहेस.", kn:"Nanna prathi prarthaneyallu neeniruve.", e:"You are in my every prayer. (Kannada)"},
+    {m:"तू माझी राजकन्या आहेस.", kn:"Neenu nanna rajakumari.", e:"You are my princess. (Kannada)"},
+    {m:"मी तुला कधीच विसरू शकत नाही.", kn:"Ninnannu mareyalu sadhyave illa.", e:"It's impossible to forget you. (Kannada)"},
+    {m:"तू माझ्यासाठी देवदूत आहेस.", kn:"Neenu nanage devadutha.", e:"You are an angel to me. (Kannada)"},
+    {m:"तुझ्या प्रेमात मी स्वतःला विसरलो.", kn:"Ninna preethiyalli nannannu naanu maretidde.", e:"I lost myself in your love. (Kannada)"},
+    {m:"नेहमी माझ्या जवळ राहा.", kn:"Endigu nanna hathira iru.", e:"Always stay close to me. (Kannada)"},
+    {m:"तू माझं सर्वस्व आहेस.", kn:"Neene nanna ella.", e:"You are my everything. (Kannada)"},
+
+    // --- ROMANTIC MALAYALAM (English Script) ---
+    {m:"तू माझ्या श्वासात आहेस.", kn:"Nee ente shwasathilundu.", e:"You are in my breath. (Malayalam)"},
+    {m:"तुझ्यावर खूप प्रेम आहे, सोन्या.", kn:"Ninne enikku orupaadu ishtamanu, ponne.", e:"I love you so much, darling. (Malayalam)"},
+    {m:"तू माझ्या आयुष्यातली प्रकाश आहेस.", kn:"Nee ente jeevithathile velichamanu.", e:"You are the light of my life. (Malayalam)"},
+    {m:"तुझं हृदय आणि माझं हृदय एकच आहे.", kn:"Ninte hridayavum ente hridayavum onnanu.", e:"Your heart and mine are one. (Malayalam)"},
+    {m:"मला तुझ्या मिठीत विरघळून जायचंय.", kn:"Ninte kaikalil alinju pokan enikku thonnunnu.", e:"I want to melt in your arms. (Malayalam)"},
+    {m:"मी फक्त तुझा विचार करतोय.", kn:"Njan ninne patti mathrame chindikkunnu.", e:"I am only thinking about you. (Malayalam)"},
+    {m:"तुझा चेहरा म्हणजे माझं सुख.", kn:"Ninte mugham ente santhoshamanue.", e:"Your face is my happiness. (Malayalam)"},
+    {m:"तू देवाचं सर्वात सुंदर देणं आहेस.", kn:"Nee daivathinte ettavum nalla sammanamanu.", e:"You are God's best gift. (Malayalam)"},
+    {m:"तुझ्याशिवाय जगणं अशक्य आहे.", kn:"Nee illathe jeevikkunnathu asadhyamanu.", e:"Living without you is impossible. (Malayalam)"},
+    {m:"मला तुझी खूप ओढ लागलीये.", kn:"Enikku ninne kaanan kothiyakunnu.", e:"I am yearning to see you. (Malayalam)"},
+    {m:"तू माझ्या हृदयाची राणी आहेस.", kn:"Nee ente hridayathile raniyanu.", e:"You are the queen of my heart. (Malayalam)"},
+    {m:"तू आहेस म्हणून मी आहे.", kn:"Nee ullathukondu njanundu.", e:"I exist because you do. (Malayalam)"},
+    {m:"तुझं प्रेम हीच माझी संपत्ती.", kn:"Ninte snehamaanu ente sampatthu.", e:"Your love is my only wealth. (Malayalam)"},
+    {m:"तू माझ्या आयुष्याचं संगीत आहेस.", kn:"Nee ente jeevithathile sangeethamanu.", e:"You are the music of my life. (Malayalam)"},
+    {m:"कधीच दूर जाऊ नकोस.", kn:"Orikkalum dhoore pokaruthe.", e:"Never go far away. (Malayalam)"},
+
+    // --- DEEP CONNECTION MIX ---
+    {m:"आपलं नातं जन्मोजन्मीचं आहे.", kn:"Namma sambandha janma janmaddu.", e:"Our bond is for lifetimes. (Kannada)"},
+    {m:"मी फक्त तुझ्यासाठी जगतोय.", kn:"Njan ninakkanyi mathramanu jeevikkunnathu.", e:"I live only for you. (Malayalam)"},
+    {m:"तू माझी ताकद आणि कमजोरी आहेस.", kn:"Nee nanna shakthi mattu balaheena.", e:"You are my strength and weakness. (Kannada)"},
+    {m:"तुझ्या डोळ्यातच माझं जग आहे.", kn:"Ninte kannukalilaanu ente lokam.", e:"My world is in your eyes. (Malayalam)"},
+    {m:"तू माझ्या कल्पनेपेक्षा सुंदर आहेस.", kn:"Nee nanna kalpanegintalu sundara.", e:"You are more beautiful than my imagination. (Kannada)"},
+    {m:"तुझ्या स्पर्शाने सगळं बदलतं.", kn:"Ninte sparsanam ellam mattunnu.", e:"Your touch changes everything. (Malayalam)"},
+    {m:"तू माझा श्वास, माझा ध्यास आहेस.", kn:"Neene nanna usiru, nanna dhyasa.", e:"You are my breath, my focus. (Kannada)"},
+    {m:"तुझ्याशी बोलल्याशिवाय दिवस पूर्ण होत नाही.", kn:"Ninnodu samsarikkathe divasam poorthiyakilla.", e:"Day isn't complete without talking to you. (Malayalam)"},
+    {m:"तू माझ्या नशिबाचं पान आहेस.", kn:"Nee nanna adrushta.", e:"You are my luck/fortune. (Kannada)"},
+    {m:"तू माझं आयुष्य सुंदर केलंस.", kn:"Nee ente jeevitham sundaramakki.", e:"You made my life beautiful. (Malayalam)"},
+    {m:"तू माझं घर आहेस.", kn:"Neene nanna mane.", e:"You are my home. (Kannada)"},
+    {m:"मला तुझी साथ जन्मभर हवीय.", kn:"Enikku ninne ennum koode venam.", e:"I want you with me forever. (Malayalam)"},
+    {m:"तुझं हसणं हीच माझी ओढ.", kn:"Ninna nagu nanna seleyu.", e:"Your smile is my attraction. (Kannada)"},
+    {m:"मी कायम तुझाच राहीन.", kn:"Njan eppozhum nintentethayi irikkum.", e:"I will stay yours forever. (Malayalam)"},
+    {m:"तू माझ्या आयुष्यातली कविता आहेस.", kn:"Nee nanna jeevanada kavana.", e:"You are the poem of my life. (Kannada)"},
+    {m:"तू माझं हृदय चोरलंस.", kn:"Nee ente hridayam kavarnnu.", e:"You stole my heart. (Malayalam)"},
+    {m:"तुझ्याशिवाय वेळ थांबतो.", kn:"Neenillade samaya nintubidutthe.", e:"Time stops without you. (Kannada)"},
+    {m:"तू माझी सर्वात मोठी संपत्ती आहेस.", kn:"Nee ente ettavum valiya sampatthannu.", e:"You are my biggest treasure. (Malayalam)"},
+    {m:"तू आणि मी, एक प्राण.", kn:"Neenu mattu naanu, ondu jeeva.", e:"You and I, one soul. (Kannada)"},
+    {m:"तुझ्या प्रेमात जग विसरलो.", kn:"Ninte snehathil lokam maretthu.", e:"Forgot the world in your love. (Malayalam)"},
+    {m:"उद्या भेटूया.", kn:"Naale sigona.", e:"Let's meet tomorrow. (Kannada)"},
+    {m:"मला उशीर होतोय.", kn:"Nanage late agthide.", e:"I am getting late. (Kannada)"},
+    {m:"रस्ता कुठे आहे?", kn:"Haadi ellide?", e:"Where is the way? (Kannada)"},
+    {m:"एक मिनिट थांबा.", kn:"Ondu nimisha nilli.", e:"Wait for a minute. (Kannada)"},
+    {m:"हे बरोबर आहे.", kn:"Idu sariyaagide.", e:"This is correct. (Kannada)"},
+    {m:"खूप पाऊस पडतोय.", kn:"Tumba male barthide.", e:"It is raining a lot. (Kannada)"},
+    {m:"चहा हवा की कॉफी?", kn:"Chaha beka coffee beka?", e:"Do you want tea or coffee? (Kannada)"},
+    {m:"कंटाळा आलाय.", kn:"Bejar agthide.", e:"I'm feeling bored/dull. (Kannada)"},
+    {m:"आता निघूया का?", kn:"Iga horadona?", e:"Shall we leave now? (Kannada)"},
+    {m:"तुम्ही जेवलात का?", kn:"Oota madidira?", e:"Did you have your meal? (Kannada)"},
+    {m:"खूप महाग आहे.", kn:"Tumba costly idu.", e:"This is very expensive. (Kannada)"},
+    {m:"कमी करा (किंमत).", kn:"Swalpa kammi maadi.", e:"Please reduce the price. (Kannada)"},
+    {m:"मला हे आवडलं.", kn:"Nanage idu ishta aithu.", e:"I liked this. (Kannada)"},
+    {m:"सावकाश जा.", kn:"Nidhanavaagi hogi.", e:"Go slowly/safely. (Kannada)"},
+    {m:"खूप गर्दी आहे.", kn:"Tumba crowd ide.", e:"It is very crowded. (Kannada)"},
+    {m:"मला झोप येतेय.", kn:"Nanage nidde barthide.", e:"I am feeling sleepy. (Kannada)"},
+    {m:"पुन्हा सांगा.", kn:"Matthe heli.", e:"Tell me again. (Kannada)"},
+    {m:"आत या.", kn:"Olage banni.", e:"Come inside. (Kannada)"},
+    {m:"बाहेर पाहा.", kn:"Horage nodu.", e:"Look outside. (Kannada)"},
+    {m:"चिंता नको.", kn:"Yochane beda.", e:"Don't worry/think too much. (Kannada)"},
+
+    // --- MALAYALAM: Soulful & Deep (English Script) ---
+    {m:"तू माझं सर्वस्व आहेस.", kn:"Nee ente ellamanu.", e:"You are my everything. (Malayalam)"},
+    {m:"माझ्या जवळ राहा.", kn:"Ente koode nilku.", e:"Stay with me. (Malayalam)"},
+    {m:"तुझा हात दे.", kn:"Ninte kai tharu.", e:"Give me your hand. (Malayalam)"},
+    {m:"तू खूप गोड बोलतेस.", kn:"Ninte samsaram nalla rasamanu.", e:"Your talk is very sweet. (Malayalam)"},
+    {m:"तू बदलू नकोस.", kn:"Nee maararuthe.", e:"Don't change. (Malayalam)"},
+    {m:"मी फक्त तुझाच आहे.", kn:"Njan nintentethu mathramanu.", e:"I am only yours. (Malayalam)"},
+    {m:"तुझे डोळे बोलके आहेत.", kn:"Ninte kannukal samsarikunnu.", e:"Your eyes speak. (Malayalam)"},
+    {m:"तू माझा श्वास आहेस.", kn:"Nee ente shwasamanu.", e:"You are my breath. (Malayalam)"},
+    {m:"आयुष्यभर सोबत राहू.", kn:"Jeevithakalsham koodeyundakum.", e:"Will be together for life. (Malayalam)"},
+    {m:"मला तुझी ओढ आहे.", kn:"Enikku ninne kaanan kothiyundu.", e:"I long to see you. (Malayalam)"},
+    {m:"तुझं दुःख माझं आहे.", kn:"Ninte sangadam entethu koodiyannu.", e:"Your sadness is mine too. (Malayalam)"},
+    {m:"तू माझी निवड आहेस.", kn:"Nee ente thiranjeduppaanu.", e:"You are my choice. (Malayalam)"},
+    {m:"तुझ्याशिवाय काहीच नाही.", kn:"Nee illathe onnumilla.", e:"Nothing without you. (Malayalam)"},
+    {m:"मला तू हवी आहेस.", kn:"Enikku ninne venam.", e:"I want you. (Malayalam)"},
+    {m:"प्रवास कसा होता?", kn:"Yathra enganeyundayirunnu?", e:"How was the journey? (Malayalam)"},
+    {m:"मी तुला कॉल करतो.", kn:"Njan ninne vilikkam.", e:"I will call you. (Malayalam)"},
+    {m:"मेसेज कर.", kn:"Message maadu.", e:"Send a message. (Kannada)"},
+    {m:"खूप भूक लागलीये.", kn:"Bhayanaka hasivu.", e:"Terribly hungry. (Kannada)"},
+    {m:"वेळेवर औषध घे.", kn:"Time-ge medicine togoli.", e:"Take medicine on time. (Kannada)"},
+    {m:"आज सुट्टी आहे का?", kn:"Ivathu raja ideya?", e:"Is it a holiday today? (Kannada)"},
+    {m:"स्वप्न पूर्ण कर.", kn:"Kanasu nane madi.", e:"Make dreams come true. (Kannada)"},
+    {m:"तू माझी शक्ती आहेस.", kn:"Nee ente shakthiyanu.", e:"You are my strength. (Malayalam)"},
+    {m:"मला नवीन कपडे घ्यायचेत.", kn:"Hosa batti thogobeku.", e:"I want to buy new clothes. (Kannada)"},
+    {m:"किती वेळ लागेल?", kn:"Eshtu hottu agutthe?", e:"How much time will it take? (Kannada)"},
+    {m:"खूप कंटाळवाणा दिवस होता.", kn:"Tumba boring day.", e:"It was a very boring day. (Kannada)"},
+    {m:"तू जगातील सर्वोत्तम मुलगी आहेस.", kn:"Nee lokathile ettavum nalla penkuttyanu.", e:"You are the best girl in the world. (Malayalam)"},
+    {m:"माझ्यावर विश्वास ठेव.", kn:"Enne vishwasikkoo.", e:"Trust me. (Malayalam)"},
+    {m:"तू खूप दयाळू आहेस.", kn:"Nee tumba dayalu.", e:"You are very kind. (Kannada)"},
+    {m:"आज काय विशेष?", kn:"Ivathu enu special?", e:"What is special today? (Kannada)"},
+    {m:"मी तुझ्यासाठी काहीही करेन.", kn:"Njan ninakkanyi enthum cheyyam.", e:"I will do anything for you. (Malayalam)"},
+    {m:"कसे आहात?", kn:"Hegiddeera?", e:"How are you? (Kannada)"},
+    {m:"तुम्ही कन्नड बोलता का?", kn:"Kannada barutha?", e:"Do you know Kannada? (Kannada)"},
+    {m:"मला समजत नाहीये.", kn:"Nanage artha agilla.", e:"I don't understand. (Kannada)"},
+    {m:"याची किंमत किती आहे?", kn:"Idu eshtu?", e:"How much is this? (Kannada)"},
+    {m:"मला पाणी हवंय.", kn:"Nanage neeru beku.", e:"I want water. (Kannada)"},
+    {m:"खूप छान आहे.", kn:"Tumba chennagide.", e:"It is very good. (Kannada)"},
+    {m:"धन्यवाद.", kn:"Dhanyavadagalu.", e:"Thank you. (Kannada)"},
+    {m:"ठीक आहे.", kn:"Sari.", e:"Okay / Alright. (Kannada)"},
+    {m:"पुढच्या चौकात थांबा.", kn:"Munde nillisi.", e:"Stop ahead (for Auto/Cab). (Kannada)"},
+    {m:"हो आणि नाही.", kn:"Houdu mattu Illa.", e:"Yes and No. (Kannada)"},
+    {m:"जेवण कसं आहे?", kn:"Oota hegide?", e:"How is the food? (Kannada)"},
+    {m:"लवकर या.", kn:"Begane banni.", e:"Come fast. (Kannada)"},
+    {m:"काय झालं?", kn:"Enu ayithu?", e:"What happened? (Kannada)"},
+    {m:"मला मदत करा.", kn:"Sahaaya maadi.", e:"Please help me. (Kannada)"},
+    {m:"तुम्ही कुठे आहात?", kn:"Neevu elliddeera?", e:"Where are you? (Kannada)"},
+    {m:"मी तुझ्यावर प्रेम करतो.", kn:"Njan ninne snehikkunnu.", e:"I love you. (Malayalam)"},
+    {m:"मला तुझी खूप आठवण येतेय.", kn:"Enikku ninne miss cheyyunnu.", e:"I miss you. (Malayalam)"},
+    {m:"तू माझं हृदय आहेस.", kn:"Nee ente hridayamanu.", e:"You are my heart. (Malayalam)"},
+    {m:"तू आणि मी, कायमचे.", kn:"Neeyum njanum, ennum.", e:"You and me, forever. (Malayalam)"},
+    {m:"तू खूप सुंदर आहेस.", kn:"Nee valare sundariyanu.", e:"You are very beautiful. (Malayalam)"},
+    {m:"काळजी घे, माझ्या सोन्या.", kn:"Sradhikkanam, ente ponne.", e:"Take care, my dear. (Malayalam)"},
+    {m:"तू माझी आहेस.", kn:"Nee entethaanu.", e:"You are mine. (Malayalam)"},
+    {m:"मी तुझी वाट पाहीन.", kn:"Njan ninakkanyi kathirikkum.", e:"I will wait for you. (Malayalam)"},
+    {m:"हसत राहा.", kn:"Eppozhum chirichu kondirikkuka.", e:"Keep smiling. (Malayalam)"},
+    {m:"माझ्या जवळ ये.", kn:"Ente aduthu varu.", e:"Come near me. (Malayalam)"},
+    {m:"तू माझं आयुष्य आहेस.", kn:"Nee ente jeevananu.", e:"You are my life. (Malayalam)"},
+    {m:"जेवलीस का?", kn:"Bakshanam kazhicho?", e:"Did you eat? (Malayalam)"},
+    {m:"शुभ रात्री, स्वप्नात ये.", kn:"Shubharathri, swapnangalil kaanam.", e:"Good night, see you in dreams. (Malayalam)"},
+    {m:"तू माझी राणी आहेस.", kn:"Nee ente raniyanu.", e:"You are my queen. (Malayalam)"},
+    {m:"मला तुझा आवाज आवडतो.", kn:"Enikku ninte shabdam ishtamanu.", e:"I love your voice. (Malayalam)"},
+    {m:"चला बाहेर जाऊया.", kn:"Horage hogona.", e:"Let's go out. (Kannada)"},
+    {m:"खूप उशीर झालाय.", kn:"Tumba thada ayithu.", e:"It's very late. (Kannada)"},
+    {m:"मला तुझा अभिमान आहे.", kn:"Enikku ninnil abhimanamundu.", e:"I am proud of you. (Malayalam)"},
+    {m:"तू खंबीर आहेस.", kn:"Nee shakthiyullavalanu.", e:"You are strong. (Malayalam)"},
+    {m:"आज खूप काम आहे का?", kn:"Ivathu tumba kelasa ideya?", e:"Is there a lot of work today? (Kannada)"},
+    {m:"थोडा वेळ विश्रांती घे.", kn:"Swalpa rest togoli.", e:"Take some rest. (Kannada)"},
+    {m:"चिंता करू नकोस.", kn:"Chinte madabeda.", e:"Don't worry. (Kannada)"},
+    {m:"मी तुझ्यासाठी इथेच आहे.", kn:"Njan ivide ninte koodeyundu.", e:"I am right here with you. (Malayalam)"},
+    {m:"हवामान कसं आहे?", kn:"Weather hegide?", e:"How is the weather? (Kannada)"},
+    {m:"मला भूक लागलीये.", kn:"Nanage hasivu agide.", e:"I am hungry. (Kannada)"},
+    {m:"तू माझ्यासाठी जग आहेस.", kn:"Nee nanna lokavagiddeeya.", e:"You are the world to me. (Kannada)"},
+    {m:"नेहमी खुश राहा.", kn:"Ennum santhoshamayirikkuka.", e:"Always be happy. (Malayalam)"},
+    {m:"तुझा दिवस शुभ जावो.", kn:"Olleyade agali.", e:"May good things happen today. (Kannada)"},
+    {m:"तू माझी प्रिय परी आहेस.", kn:"Nee nanna muddina Pari.", e:"You are my cute Pari. (Kannada)"},
+    {m:"कधी येणार?", kn:"Yavaga baruttheera?", e:"When will you come? (Kannada)"},
+    {m:"तू अद्वितीय आहेस.", kn:"Nee ananyamanu.", e:"You are unique. (Malayalam)"},
+    {m:"मला तुझी मिठी हवीय.", kn:"Enikku ninte kettippidutham venam.", e:"I want your hug. (Malayalam)"},
+    {m:"घाबरू नकोस.", kn:"Hedarabeda.", e:"Don't be afraid. (Kannada)"},
+    {m:"प्रयत्न करत राहा.", kn:"Prayatna madutha iri.", e:"Keep trying. (Kannada)"},
+    {m:"मी तुझा आहे.", kn:"Njan nintentethaanu.", e:"I am yours. (Malayalam)"}
+];
+
+  
+  const movies = [
+    // --- DRAMA & EMOTION ---
+    {q:"In 'Gully Boy', what is the real name of the character 'Murad'?", a:"Ranveer Singh", o:["Ranveer Singh", "Siddhant Chaturvedi", "Vijay Varma", "Ali Fazal"]},
+    {q:"Which movie features the iconic dialogue 'Thappad se darr nahi lagta sahib, pyaar se lagta hai'?", a:"Dabangg", o:["Dabangg", "Wanted", "Bodyguard", "Tere Naam"]},
+    {q:"In 'Padmaavat', who played the role of 'Ratan Singh'?", a:"Shahid Kapoor", o:["Shahid Kapoor", "Ranveer Singh", "Jim Sarbh", "Vicky Kaushal"]},
+    {q:"Which film is based on the real-life story of 'Sandeep Singh'?", a:"Soorma", o:["Soorma", "Chak De! India", "Gold", "83"]},
+    {q:"Who played the mother in the legendary Marathi drama 'Natsamrat'?", a:"Medha Manjrekar", o:["Medha Manjrekar", "Rohini Hattangadi", "Priya Bapat", "Sai Tamhankar"]},
+    {q:"In 'Mughal-E-Azam', what was the name of the dancer loved by Salim?", a:"Anarkali", o:["Anarkali", "Bahara", "Zohra", "Suraiya"]},
+    {q:"Which Marathi movie deals with the sensitive topic of a father-son relationship and a lung disease?", a:"Shwaas", o:["Shwaas", "Killa", "Fandry", "Ventilator"]},
+    {q:"Who played the lead in the intense drama 'Article 15'?", a:"Ayushmann Khurrana", o:["Ayushmann Khurrana", "Rajkummar Rao", "Vicky Kaushal", "Ranbir Kapoor"]},
+    {q:"Which Marathi play is a famous adaptation of George Bernard Shaw's 'Pygmalion'?", a:"Ti Phulrani", o:["Ti Phulrani", "Natsamrat", "Ghashiram Kotwal", "Shantata Court Chalu Aahe"]},
+    {q:"In 'Sanju', who played the role of Sanjay Dutt's best friend 'Kamli'?", a:"Vicky Kaushal", o:["Vicky Kaushal", "Jim Sarbh", "Paresh Rawal", "Ranbir Kapoor"]},
+
+    {q:"Who is known as the 'Allah-Rakha' of Indian Flute?", a:"Hariprasad Chaurasia", o:["Hariprasad Chaurasia", "Zakir Hussain", "Ravi Shankar", "Amjad Ali Khan"]},
+    {q:"Which Marathi singer is famous for the 'Natyasangeet' style?", a:"Rahul Deshpande", o:["Rahul Deshpande", "Mahesh Kale", "Anand Bhate", "Swapnil Bandodkar"]},
+    {q:"Who composed the music for the Oscar-winning 'Slumdog Millionaire'?", a:"A.R. Rahman", o:["A.R. Rahman", "Amit Trivedi", "Pritam", "Shankar-Ehsaan-Loy"]},
+    {q:"Which instrument does Ustad Zakir Hussain play?", a:"Tabla", o:["Tabla", "Sitar", "Sarod", "Santur"]},
+    {q:"Who sang the original Marathi version of 'Lustrous' song 'Chandra'?", a:"Shreya Ghoshal", o:["Shreya Ghoshal", "Anandi Joshi", "Aarya Ambekar", "Vaishali Samant"]},
+    {q:"Which Bollywood singer has a record for singing in the most languages?", a:"P. Susheela", o:["P. Susheela", "Lata Mangeshkar", "Asha Bhosle", "K.S. Chithra"]},
+    {q:"What is the name of the classical raga often associated with the 'Morning'?", a:"Bhairav", o:["Bhairav", "Yaman", "Malkauns", "Darbari"]},
+    {q:"Who is the music director duo behind the hits of 'Sairat'?", a:"Ajay-Atul", o:["Ajay-Atul", "Vishal-Shekhar", "Sachet-Parampara", "Jatin-Lalit"]},
+    {q:"Which song by Arijit Singh became a global anthem for heartbreak in 'Aashiqui 2'?", a:"Tum Hi Ho", o:["Tum Hi Ho", "Sunn Raha Hai", "Chahun Main Ya Naa", "Milne Hai Mujhse Aayi"]},
+    {q:"In 'Rockstar', who provided the soulful voice for Ranbir Kapoor?", a:"Mohit Chauhan", o:["Mohit Chauhan", "Arijit Singh", "KK", "Atif Aslam"]},
+    {q:"Which Sangeet Natak features the famous song 'He Surano Chandra Vha'?", a:"Katyar Kaljat Ghusli", o:["Katyar Kaljat Ghusli", "Manaapmaan", "Saubhadra", "Shakuntal"]},
+    {q:"Who is the author of the legendary play 'Vyakti ani Valli'?", a:"P.L. Deshpande", o:["P.L. Deshpande", "V.P. Kale", "Vijay Tendulkar", "Kusumagraj"]},
+    {q:"The character 'Laxman' in 'Ashi Hi Banwa Banwi' was played by?", a:"Lakshmikant Berde", o:["Lakshmikant Berde", "Ashok Saraf", "Sachin Pilgaonkar", "Siddharth Ray"]},
+    {q:"Which play is considered the 'First' Marathi Sangeet Natak?", a:"Sangeet Shakuntal", o:["Sangeet Shakuntal", "Sangeet Sharada", "Sangeet Saubhadra", "Mridchhakatika"]},
+    {q:"In 'Moruchi Mavshi', which actor famously wore a saree for the role?", a:"Vijay Chavan", o:["Vijay Chavan", "Bharat Jadhav", "Siddharth Jadhav", "Prashant Damle"]},
+    {q:"In the movie 'Sairat', what is the name of the male lead character?", a:"Parshya", o:["Parshya", "Langda", "Salya", "Prince"]},
+    {q:"Which Marathi movie was India's official entry to the Oscars in 2004?", a:"Shwaas", o:["Shwaas", "Harishchandrachi Factory", "Court", "Ventilator"]},
+    {q:"Who played the role of 'Bajirao' in the Marathi film 'Hirkani'?", a:"Aniket Vishwasrao", o:["Aniket Vishwasrao", "Prasad Oak", "Subodh Bhave", "Jitendra Joshi"]},
+    {q:"Which movie features the iconic dialogue 'Kuni kunitari yenar asel'?", a:"Ashi Hi Banwa Banwi", o:["Ashi Hi Banwa Banwi", "Zapatlela", "Gammat Jammat", "Thartharat"]},
+    {q:"In 'Duniyadari', what is the name of the character played by Sumeet Raghavan?", a:"Shreyas", o:["Shreyas", "Digya", "DSP", "Pritam"]},
+    {q:"Which legendary actor played the lead in 'Pinjara' (1972)?", a:"Dr. Shriram Lagoo", o:["Dr. Shriram Lagoo", "Nilu Phule", "Dada Kondke", "Kuldeep Pawar"]},
+    {q:"Which film revolves around a boy's attachment to his bicycle called Elizabeth?", a:"Elizabeth Ekadashi", o:["Elizabeth Ekadashi", "Killa", "Fandry", "Dhag"]},
+    {q:"In the movie 'Natsamrat', Belvalkar's character is obsessed with which writer?", a:"Shakespeare", o:["Shakespeare", "Kusumagraj", "Pu La Deshpande", "Vijay Tendulkar"]},
+    {q:"Which Marathi movie is based on the life of the father of Indian Cinema?", a:"Harishchandrachi Factory", o:["Harishchandrachi Factory", "Ani... Dr. Kashinath Ghanekar", "Balgandharva", "Lokmanya"]},
+    {q:"Who directed the high-octane action movie 'Lai Bhaari'?", a:"Nishikant Kamat", o:["Nishikant Kamat", "Mahesh Manjrekar", "Ravi Jadhav", "Aditya Sarpotdar"]},
+
+    // --- BOLLYWOOD & ROMANCE ---
+    {q:"In 'Dilwale Dulhania Le Jayenge', where do Raj and Simran first meet?", a:"Europe", o:["Europe", "Punjab", "London", "Mumbai"]},
+    {q:"Which movie features the famous 'Palat' scene?", a:"DDLJ", o:["DDLJ", "Kuch Kuch Hota Hai", "Dil To Pagal Hai", "Mohabbatein"]},
+    {q:"In 'Jab We Met', what is the name of Geet’s hometown?", a:"Bhatinda", o:["Bhatinda", "Amritsar", "Shimla", "Manali"]},
+    {q:"Who played the character of 'Aisha' in the movie 'Wake Up Sid'?", a:"Konkona Sen Sharma", o:["Konkona Sen Sharma", "Deepika Padukone", "Alia Bhatt", "Ranbir Kapoor"]},
+    {q:"Which movie features the song 'Gerua' shot in Iceland?", a:"Dilwale", o:["Dilwale", "Chennai Express", "Happy New Year", "Raees"]},
+    {q:"In 'Yeh Jawaani Hai Deewani', what is Bunny's real name?", a:"Kabir", o:["Kabir", "Avi", "Aditya", "Ranbir"]},
+    {q:"Which film tells the story of a blind girl falling in love with a tourist guide in Kashmir?", a:"Fanaa", o:["Fanaa", "Haider", "Highway", "Rockstar"]},
+    {q:"What was the debut movie of Deepika Padukone?", a:"Om Shanti Om", o:["Om Shanti Om", "Bachna Ae Haseeno", "Love Aaj Kal", "Cocktail"]},
+    {q:"In '3 Idiots', what does 'All Izz Well' refer to?", a:"A phrase to calm the heart", o:["A phrase to calm the heart", "A exam code", "A greeting", "A song title"]},
+    {q:"Which movie features the love story of 'Barfi' and 'Jhilmil'?", a:"Barfi!", o:["Barfi!", "Jagga Jasoos", "Ludo", "Tamasha"]},
+
+    // --- ICONIC CHARACTERS & SONGS ---
+    {q:"Which Marathi actress is known as the 'Apsara' of M-Town?", a:"Amruta Khanvilkar", o:["Amruta Khanvilkar", "Sai Tamhankar", "Priya Bapat", "Sonalee Kulkarni"]},
+    {q:"In 'Zapatlela', what is the name of the haunted doll?", a:"Tatya Vinchu", o:["Tatya Vinchu", "Lakshya", "Mahesh", "Kubdya Khavis"]},
+    {q:"Who sang the original version of 'Gulabachi Kali'?", a:"Vaishali Samant", o:["Vaishali Samant", "Shreya Ghoshal", "Anandi Joshi", "Bela Shende"]},
+    {q:"In 'Bajirao Mastani', who played the role of Kashibai?", a:"Priyanka Chopra", o:["Priyanka Chopra", "Deepika Padukone", "Anushka Sharma", "Vidya Balan"]},
+    {q:"Which movie features the soulful song 'Katyar Kaljat Ghusli'?", a:"Katyar Kaljat Ghusli", o:["Katyar Kaljat Ghusli", "Me Vasantrao", "Balgandharva", "Natsamrat"]},
+    {q:"What is the name of the fictional village in 'Lagaan'?", a:"Champaner", o:["Champaner", "Ramgarh", "Charanpur", "Malguidi"]},
+    {q:"In 'Sholay', how many men were there in Gabbar's gang (according to the dialogue)?", a:"Poore pachas", o:["Poore pachas", "Dus", "Bees", "Chalees"]},
+    {q:"Which actor is known as the 'Chocolate Boy' of Marathi Cinema?", a:"Sumeet Raghavan", o:["Sumeet Raghavan", "Swapnil Joshi", "Subodh Bhave", "Ankush Chaudhari"]},
+    {q:"Which film features the song 'Mala Ved Laagale'?", a:"Timepass", o:["Timepass", "Duniyadari", "Mitwaa", "Dagdi Chawl"]},
+    {q:"Who played the role of 'Kashinath Ghanekar' in his biopic?", a:"Subodh Bhave", o:["Subodh Bhave","Prasad Oak","Sumeet Raghavan","Amey Wagh"]},
+    {q:"Which film features the song 'Apsara Aali'?", a:"Natarang", o:["Natarang","Kattyar Kaljat Ghusli","Sairat","Mitwaa"]},
+    {q:"In 'Kuch Kuch Hota Hai', what was Rahul's daughter's name?", a:"Anjali", o:["Anjali","Tina","Pooja","Sana"]},
+    {q:"Which Marathi movie is based on the life of an orphan 'Jabya'?", a:"Fandry", o:["Fandry","Sairat","Killa","Court"]},
+    {q:"Who directed the movie 'Bajirao Mastani'?", a:"Sanjay Leela Bhansali", o:["Sanjay Leela Bhansali","Karan Johar","Rohit Shetty","Farhan Akhtar"]},
+    {q:"Which movie features the iconic dialogue 'Ata mazi satakli'?", a:"Singham", o:["Singham","Simmba","Sooryavanshi","Lai Bhaari"]},
+    {q:"In 'Timepass', what is the name of the girl Dagdu loves?", a:"Praju", o:["Praju","Archi","Shalu","Ketaki"]},
+    {q:"Which Bollywood actor is known as the 'Shahenshah'?", a:"Amitabh Bachchan", o:["Amitabh Bachchan","Shah Rukh Khan","Salman Khan","Aamir Khan"]},
+    {q:"Who is the lead actress in the movie 'Jhimma'?", a:"Sonalee Kulkarni", o:["Sonalee Kulkarni","Sai Tamhankar","Priya Bapat","Siddharth Chandekar"]},
+    {q:"Which film features the song 'Zingaat'?", a:"Sairat", o:["Sairat","Duniyadari","Timepass","Dagdi Chawl"]},
+    {q:"In '3 Idiots', what was Rancho's real name?", a:"Phunsukh Wangdu", o:["Phunsukh Wangdu","Ranchoddas Chanchad","Chatur Ramalingam","Farhan Qureshi"]},
+    {q:"Which movie features a haunted doll named Tatya Vinchu?", a:"Zapatlela", o:["Zapatlela","Pachadlela","Thartharat","Khilona"]},
+    {q:"Who played the lead in the Marathi film 'Pawankhind'?", a:"Chinmay Mandlekar", o:["Chinmay Mandlekar","Ajay Purkar","Ankit Mohan","Mrinal Kulkarni"]},
+    {q:"In 'DDLJ', what is the name of the station where Raj and Simran miss the train?", a:"St. Moritz", o:["St. Moritz","Zurich","London","Punjab"]},
+    {q:"Which Marathi movie won the National Award for 'Killa'?", a:"Avinash Arun", o:["Avinash Arun","Chaitanya Tamhane","Nagraj Manjule","Ravi Jadhav"]},
+    {q:"Who is the lead actor in 'Muramba'?", a:"Amey Wagh", o:["Amey Wagh","Mithila Palkar","Sachin Khedekar","Jitendra Joshi"]},
+    {q:"In 'Yeh Jawaani Hai Deewani', where does the group go for their first trip?", a:"Manali", o:["Manali","Shimla","Leh","Udaipur"]},
+    {q:"Which actress played the lead in 'Piku'?", a:"Deepika Padukone", o:["Deepika Padukone","Alia Bhatt","Kareena Kapoor","Priyanka Chopra"]},
+    {q:"Who sang the famous song 'Kombdi Palali'?", a:"Vaishali Samant", o:["Vaishali Samant","Shreya Ghoshal","Sunidhi Chauhan","Bela Shende"]},
+    {q:"In 'Sholay', what was the name of Basanti's horse?", a:"Dhanno", o:["Dhanno","Moti","Chetak","Badal"]},
+    {q:"Which Marathi film is a remake of 'Sairat' in Hindi?", a:"Dhadak", o:["Dhadak","Kedarnath","Luka Chuppi","Simmba"]},
+    {q:"Who played the role of 'Manbhavyati' in 'Katyar Kaljat Ghusli'?", a:"Sakshi Tanwar", o:["Sakshi Tanwar","Amruta Khanvilkar","Mrunmayee Deshpande","Anjali Patil"]},
+    {q:"In 'Jab We Met', which station does Geet get off at?", a:"Ratlam", o:["Ratlam","Bhatinda","Shimla","Kota"]},
+    {q:"Which movie features the song 'Wajle Ki Baara'?", a:"Natarang", o:["Natarang","Lai Bhaari","Sairat","Me Shivajiraje Bhosale Boltoy"]},
+    {q:"Who directed 'Lagaan'?", a:"Ashutosh Gowariker", o:["Ashutosh Gowariker","Aamir Khan","Rajkumar Hirani","Zoya Akhtar"]},
+    {q:"Which actor played 'Laxman' in the movie 'Ashi Hi Banwa Banwi'?", a:"Lakshmikant Berde", o:["Lakshmikant Berde","Ashok Saraf","Sachin Pilgaonkar","Siddharth Ray"]},
+    {q:"In 'Om Shanti Om', what is the signature step of 'Deewangi Deewangi'?", a:"Hand wave", o:["Hand wave","Leg twist","Head shake","Jump"]},
+    {q:"Which Marathi movie is about a cruise trip of 7 women?", a:"Jhimma", o:["Jhimma","Hirkani","Vazandar","Gulabjaam"]},
+    {q:"Who is the 'King of Romance' in Bollywood?", a:"Shah Rukh Khan", o:["Shah Rukh Khan","Salman Khan","Aamir Khan","Ranbir Kapoor"]},
+    {q:"In 'Zindagi Na Milegi Dobara', which festival do they celebrate in Spain?", a:"La Tomatina", o:["La Tomatina","Bull Run","Flamenco","Diwali"]},
+    {q:"Which Marathi film depicts the life of Sant Tukaram?", a:"Sant Tukaram", o:["Sant Tukaram","Dnyaneshwar","Eknath","Namdev"]},
+    {q:"Who played the lead in 'Lai Bhaari'?", a:"Riteish Deshmukh", o:["Riteish Deshmukh","Salman Khan","Siddharth Jadhav","Ankush Chaudhari"]},
+    {q:"In 'Dil Chahta Hai', which city do the friends visit?", a:"Goa", o:["Goa","Mumbai","Sydney","Pune"]},
+    {q:"Which song features 'Madhuri Dixit' in a Marathi film?", a:"Bai Ga", o:["Bai Ga","Chandra","Apsara Aali","Navrai Majhi"]},
+    {q:"Who is the lead actor in 'Duniyadari'?", a:"Swapnil Joshi", o:["Swapnil Joshi","Ankush Chaudhari","Siddharth Jadhav","Jitendra Joshi"]},
+    {q:"Which movie is known for the dialogue 'Mogambo Khush Hua'?", a:"Mr. India", o:["Mr. India","Shaan","Don","Agneepath"]},
+    {q:"Who played the female lead in 'Natsamrat'?", a:"Medha Manjrekar", o:["Medha Manjrekar","Rohini Hattangadi","Priya Bapat","Sai Tamhankar"]},
+    {q:"Which Bollywood movie is based on the life of 'M.S. Dhoni'?", a:"The Untold Story", o:["The Untold Story","Azhar","83","Gold"]},
+    {q:"In 'Kaho Naa Pyaar Hai', what is Hrithik's double role name?", a:"Rohit and Raj", o:["Rohit and Raj","Rahul and Arjun","Amit and Vicky","Kabir and Aryan"]},
+    {q:"Which Marathi movie features the song 'Tik Tik Vajate Dokyat'?", a:"Duniyadari", o:["Duniyadari","Sairat","Timepass","Mitwaa"]},
+    {q:"Who directed the film 'Dangal'?", a:"Nitesh Tiwari", o:["Nitesh Tiwari","Rajkumar Hirani","Zoya Akhtar","Kabir Khan"]},
+    {q:"Which Marathi actress won hearts in 'The Disciple'?", a:"Sumitra Bhave", o:["Sumitra Bhave","Amruta Subhash","Anjali Patil","Geetanjali Kulkarni"]},
+    {q:"In 'Queen', where does Rani go for her solo honeymoon?", a:"Paris and Amsterdam", o:["Paris and Amsterdam","London","New York","Tokyo"]},
+    {q:"Who played 'Bajirao' in the movie 'Bajirao Mastani'?", a:"Ranveer Singh", o:["Ranveer Singh","Ranbir Kapoor","Shahid Kapoor","Hrithik Roshan"]},
+    {q:"Which Marathi movie is based on a primary school in a village?", a:"Dhag", o:["Dhag","Fandry","Shala","Killa"]},
+    {q:"In 'Barfi!', what is the character 'Jhilmil' suffering from?", a:"Autism", o:["Autism","Blindness","Deafness","Mutism"]},
+    {q:"Who sang 'Tum Hi Ho' from Aashiqui 2?", a:"Arijit Singh", o:["Arijit Singh","Atif Aslam","Armaan Malik","Sonu Nigam"]},
+    {q:"Which movie features the song 'Lungi Dance'?", a:"Chennai Express", o:["Chennai Express","Dilwale","Raees","Fan"]},
+    {q:"Who is the father of Indian Cinema?", a:"Dadasaheb Phalke", o:["Dadasaheb Phalke","V. Shantaram","Raj Kapoor","Guru Dutt"]},
+    {q:"Which film is known for the dialogue 'Rahul, naam toh suna hoga'?", a:"Dil To Pagal Hai", o:["Dil To Pagal Hai","DDLJ","KKHH","Main Hoon Na"]},
+    {q:"Who played the role of 'Manjulika' in 'Bhool Bhulaiyaa' (2007)?", a:"Vidya Balan", o:["Vidya Balan", "Tabu", "Kiara Advani", "Amrita Rao"]}  
+];
+
+
+  
+  const history = [
+    // --- SCIENCE, SPACE & ACHIEVEMENTS ---
+    {q:"Who is known as the 'Missile Man of India'?", a:"Dr. A.P.J. Abdul Kalam", o:["Dr. A.P.J. Abdul Kalam", "Homi Bhabha", "Vikram Sarabhai", "C.V. Raman"]},
+    {q:"What was the name of India's first satellite?", a:"Aryabhata", o:["Aryabhata", "Rohini", "Bhaskara", "Apple"]},
+    {q:"In which city is the 'Indian Institute of Science' (IISc) located?", a:"Bangalore", o:["Bangalore", "Pune", "Mumbai", "Hyderabad"]},
+    {q:"Who was the first Indian woman to go into space?", a:"Kalpana Chawla", o:["Kalpana Chawla", "Sunita Williams", "Rakesh Sharma", "Avani Chaturvedi"]},
+    {q:"Which Indian city is known as the 'Garden City of India'?", a:"Bangalore", o:["Bangalore", "Mysore", "Chandigarh", "Pune"]},
+    {q:"What is the name of India's mission to the Moon?", a:"Chandrayaan", o:["Chandrayaan", "Mangalyaan", "Gaganyaan", "Aditya-L1"]},
+    {q:"Who was the first Indian to win a Nobel Prize in Physics?", a:"C.V. Raman", o:["C.V. Raman", "Homi Bhabha", "S. Chandrasekhar", "Satyendra Nath Bose"]},
+
+    // --- MARATHI PRIDE & HERITAGE ---
+    {q:"Which Marathi warrior is known as the 'Sword of the Maratha Empire'?", a:"Bajirao I", o:["Bajirao I", "Chimaji Appa", "Hambirrao Mohite", "Dhanaji Jadhav"]},
+    {q:"The 'Shalini Palace' is located in which city?", a:"Kolhapur", o:["Kolhapur", "Satara", "Sangli", "Pune"]},
+    {q:"Which district is famous for its 'Warli' art?", a:"Palghar", o:["Palghar", "Thane", "Nashik", "Raigad"]},
+    {q:"Who founded the 'Bharat Ratna' winning institution 'SNDT Women's University'?", a:"Dhondo Keshav Karve", o:["Dhondo Keshav Karve", "Jyotiba Phule", "Agarkar", "Savarkar"]},
+    {q:"Which fort is famous for its 'Pali Darwaja'?", a:"Raigad", o:["Raigad", "Pratapgad", "Torna", "Sinhagad"]},
+    {q:"The 'Kopeshwar Temple' at Khidrapur is famous for its unique architecture on the banks of which river?", a:"Krishna", o:["Krishna", "Koyna", "Panchganga", "Bhima"]},
+    {q:"Which city is known as the 'Historical Capital' of Maharashtra?", a:"Kolhapur", o:["Kolhapur", "Pune", "Satara", "Sambhaji Nagar"]},
+
+    // --- GEOGRAPHY & NATURE ---
+    {q:"Which pass connects Pune and Satara?", a:"Katraj Ghat", o:["Katraj Ghat", "Tamhini Ghat", "Varandha Ghat", "Ambenali Ghat"]},
+    {q:"Which river is known as the 'Sorrow of Bihar' but actually flows from the Himalayas?", a:"Kosi", o:["Kosi", "Ganga", "Yamuna", "Tista"]},
+    {q:"Which is the longest beach in Maharashtra?", a:"Guhagar", o:["Guhagar", "Alibaug", "Ganpatipule", "Tarkarli"]},
+    {q:"The 'Bhandardara' dam is built on which river?", a:"Pravara", o:["Pravara", "Mula", "Mutha", "Godavari"]},
+    {q:"Which hill station is famous for its 'Points' like Arthur's Seat?", a:"Mahabaleshwar", o:["Mahabaleshwar", "Lonavala", "Matheran", "Panchgani"]},
+    {q:"Which forest is known as the 'Evergreen' forest of Maharashtra?", a:"Mahabaleshwar", o:["Mahabaleshwar", "Tadoba", "Melghat", "Bhimashankar"]},
+
+    // --- INDIAN CULTURE & TRIVIA ---
+    {q:"Which Indian state is known as 'God's Own Country'?", a:"Kerala", o:["Kerala", "Goa", "Sikkim", "Himachal Pradesh"]},
+    {q:"What is the official language of the state of Karnataka?", a:"Kannada", o:["Kannada", "Telugu", "Tamil", "Malayalam"]},
+    {q:"Which monument was built by Shah Jahan in memory of his wife?", a:"Taj Mahal", o:["Taj Mahal", "Red Fort", "Humayun's Tomb", "Qutub Minar"]},
+    {q:"In which year did India win its first Cricket World Cup?", a:"1983", o:["1983", "2011", "2007", "1999"]},
+    {q:"Which Indian festival celebrates the victory of light over darkness?", a:"Diwali", o:["Diwali", "Holi", "Eid", "Christmas"]},
+    {q:"Who wrote the National Anthem of India?", a:"Rabindranath Tagore", o:["Rabindranath Tagore", "Bankim Chandra", "Sarojini Naidu", "Lata Mangeshkar"]},
+    {q:"What is the currency of India?", a:"Rupee", o:["Rupee", "Dollar", "Yen", "Euro"]},
+    {q:"Which is the national animal of India?", a:"Tiger", o:["Tiger", "Lion", "Elephant", "Leopard"]},
+
+    // --- LIFESTYLE & MISC ---
+    {q:"Which city is famous for its 'Mysore Pak' sweet?", a:"Mysore", o:["Mysore", "Bangalore", "Mangalore", "Hubli"]},
+    {q:"The 'Silk City' of Maharashtra is?", a:"Paithan", o:["Paithan", "Yeola", "Nashik", "Solapur"]},
+    {q:"Which is the largest railway station in Mumbai?", a:"CSMT", o:["CSMT", "Dadarm", "Bandra Terminus", "Mumbai Central"]},
+    {q:"What is the name of the famous 'Glass House' in Bangalore's Lalbagh?", a:"Glass House", o:["Glass House", "Crystal Palace", "Green House", "Echo House"]},
+    {q:"Which Indian city is famous for its 'Biryani'?", a:"Hyderabad", o:["Hyderabad", "Lucknow", "Kolkata", "Delhi"]},
+    {q:"The 'Statue of Unity' is dedicated to which leader?", a:"Sardar Vallabhbhai Patel", o:["Sardar Vallabhbhai Patel", "Mahatma Gandhi", "B.R. Ambedkar", "Subhash Chandra Bose"]},
+    {q:"Which month is the Marathi 'Gudi Padwa' usually celebrated in?", a:"Chaitra", o:["Chaitra", "Vaishakh", "Ashadh", "Kartik"]},
+    {q:"The 'Lonar Lake' water is famous for being?", a:"Alkaline", o:["Alkaline", "Sweet", "Acidic", "Icy"]},
+    {q:"Which Marathi festival is celebrated by flying kites?", a:"Makar Sankranti", o:["Makar Sankranti", "Gudi Padwa", "Diwali", "Holi"]},
+    {q:"Who is known as the 'Iron Man of India'?", a:"Sardar Patel", o:["Sardar Patel", "Lal Bahadur Shastri", "Bhagat Singh", "Subhash Bose"]},
+    {q:"Which spice is India the largest producer of?", a:"Turmeric", o:["Turmeric", "Pepper", "Cardamom", "Clove"]},
+    {q:"Which state is known as the 'Tea Garden of India'?", a:"Assam", o:["Assam", "West Bengal", "Kerala", "Tamil Nadu"]},
+    {q:"What is the main ingredient of 'Puran Poli'?", a:"Chana Dal", o:["Chana Dal", "Moong Dal", "Toor Dal", "Urad Dal"]},
+    {q:"Which city is famous for its 'Panchamrut'?", a:"Pandharpur", o:["Pandharpur", "Alandi", "Dehu", "Nashik"]},
+    {q:"Who invented the zero?", a:"Aryabhata", o:["Aryabhata", "Bhaskara", "Varahamihira", "Sushruta"]},
+    {q:"Which river flows through the city of Pune?", a:"Mula-Mutha", o:["Mula-Mutha", "Godavari", "Krishna", "Koyna"]},
+    {q:"What is the height of 'Kalsubai' peak?", a:"1646 meters", o:["1646 meters", "1567 meters", "1789 meters", "1450 meters"]},
+    {q:"Which city is famous for its 'Solapuri Chadar'?", a:"Solapur", o:["Solapur", "Satara", "Sangli", "Kolhapur"]},
+    {q:"Which is the national flower of India?", a:"Lotus", o:["Lotus", "Rose", "Jasmine", "Marigold"]},
+    {q:"Which Indian scientist won the Nobel Prize for Medicine?", a:"Har Gobind Khorana", o:["Har Gobind Khorana", "Amartya Sen", "C.V. Raman", "Venkatraman Ramakrishnan"]},
+    {q:"What is the capital of Karnataka?", a:"Bangalore", o:["Bangalore", "Mysore", "Hubli", "Mangalore"]},
+    {q:"Which state is famous for the 'Classical Dance' form Kathakali?", a:"Kerala", o:["Kerala", "Tamil Nadu", "Karnataka", "Andhra Pradesh"]},
+    {q:"Who is the author of the famous epic 'Mahabharata'?", a:"Ved Vyas", o:["Ved Vyas", "Valmiki", "Kalidasa", "Tulsidas"]},
+    {q:"Which Indian author won the Nobel Prize for Literature in 1913?", a:"Rabindranath Tagore", o:["Rabindranath Tagore", "R.K. Narayan", "Sarojini Naidu", "Vikram Seth"]},
+    {q:"Who wrote the famous Marathi novel 'Mrityunjay'?", a:"Shivaji Sawant", o:["Shivaji Sawant", "V.S. Khandekar", "Pu La Deshpande", "Vishwas Patil"]},
+    {q:"'The Guide' is a world-famous novel written by whom?", a:"R.K. Narayan", o:["R.K. Narayan", "Mulk Raj Anand", "Raja Rao", "Khushwant Singh"]},
+    {q:"Which book is the autobiography of Dr. A.P.J. Abdul Kalam?", a:"Wings of Fire", o:["Wings of Fire", "Ignited Minds", "My Experiments with Truth", "Playing It My Way"]},
+    {q:"Who is known as the 'Nightingale of India' for her poetry?", a:"Sarojini Naidu", o:["Sarojini Naidu", "Kamala Das", "Amrita Pritam", "Mahadevi Verma"]},
+    {q:"Which famous play was written by Kalidasa?", a:"Abhijnanasakuntalam", o:["Abhijnanasakuntalam", "Mrichchhakatika", "Mudrarakshasa", "Ratnavali"]},
+    {q:"Who wrote the revolutionary book 'Anandamath'?", a:"Bankim Chandra Chattopadhyay", o:["Bankim Chandra Chattopadhyay", "Sarat Chandra", "Rabindranath Tagore", "Ishwar Chandra Vidyasagar"]},
+    {q:"Which Marathi writer's pen name is 'Kusumagraj'?", a:"V.V. Shirwadkar", o:["V.V. Shirwadkar", "Vinda Karandikar", "P.L. Deshpande", "Mangesh Padgaonkar"]},
+    {q:"Who authored the modern bestseller 'The Palace of Illusions'?", a:"Chitra Banerjee Divakaruni", o:["Chitra Banerjee Divakaruni", "Kiran Desai", "Arundhati Roy", "Anita Nair"]},
+    {q:"'Godan' and 'Gaban' are famous works of which author?", a:"Munshi Premchand", o:["Munshi Premchand", "Jaishankar Prasad", "Ramdhari Singh Dinkar", "Mahadevi Verma"]},
+    {q:"Who wrote 'The God of Small Things'?", a:"Arundhati Roy", o:["Arundhati Roy", "Jhumpa Lahiri", "Anita Desai", "Shobhaa De"]},
+    {q:"Which Marathi book is a humorous collection by P.L. Deshpande?", a:"Vyakti ani Valli", o:["Vyakti ani Valli", "Batatyachi Chal", "Asami Asami", "Gola Berij"]},
+    {q:"Who is the author of the 'Shiva Trilogy'?", a:"Amish Tripathi", o:["Amish Tripathi", "Ashwin Sanghi", "Devdutt Pattanaik", "Chetan Bhagat"]},
+    {q:"Which ancient text is known as the 'Fifth Veda'?", a:"Natyashastra", o:["Natyashastra", "Mahabharata", "Ramayana", "Yogashastra"]},
+    {q:"Who wrote the historical novel 'Rau' (which inspired Bajirao Mastani)?", a:"N.S. Inamdar", o:["N.S. Inamdar", "Shivaji Sawant", "Ranjit Desai", "Vishwas Patil"]},
+    {q:"'Train to Pakistan' is a novel by which author?", a:"Khushwant Singh", o:["Khushwant Singh", "Vikram Seth", "Amitav Ghosh", "Salman Rushdie"]},
+    {q:"Who is the creator of the fictional town 'Malgudi'?", a:"R.K. Narayan", o:["R.K. Narayan", "Ruskin Bond", "Anita Desai", "Vikram Chandra"]},
+    {q:"Which Marathi saint wrote 'Pasayadan'?", a:"Sant Dnyaneshwar", o:["Sant Dnyaneshwar", "Sant Tukaram", "Sant Eknath", "Sant Namdev"]},
+    {q:"Who wrote the Booker Prize-winning novel 'The White Tiger'?", a:"Aravind Adiga", o:["Aravind Adiga", "Salman Rushdie", "Kiran Desai", "Aravind Krishna Mehrotra"]},
+    {q:"Which epic tells the story of Rama and Sita?", a:"Ramayana", o:["Ramayana", "Mahabharata", "Silappadikaram", "Manimekalai"]},
+    {q:"Who wrote the Marathi masterpiece 'Yayati'?", a:"V.S. Khandekar", o:["V.S. Khandekar", "Shivaji Sawant", "V.V. Shirwadkar", "P.L. Deshpande"]},
+    {q:"'Midnight's Children' was written by whom?", a:"Salman Rushdie", o:["Salman Rushdie", "Vikram Seth", "Amitav Ghosh", "Shashi Tharoor"]},
+    {q:"Who is the author of 'Discovery of India'?", a:"Jawaharlal Nehru", o:["Jawaharlal Nehru", "Mahatma Gandhi", "Sardar Patel", "B.R. Ambedkar"]},
+    {q:"Which poet wrote the famous lines 'Where the mind is without fear'?", a:"Rabindranath Tagore", o:["Rabindranath Tagore", "Sarojini Naidu", "Faiz Ahmed Faiz", "Gulzar"]},
+    {q:"Who wrote the Sanskrit text 'Arthashastra'?", a:"Chanakya", o:["Chanakya", "Aryabhata", "Varahamihira", "Sushruta"]},
+    {q:"Which Marathi writer wrote 'Shyamchi Aai'?", a:"Sane Guruji", o:["Sane Guruji", "Vinoba Bhave", "V.D. Savarkar", "B.R. Ambedkar"]},
+    {q:"Who is the author of 'A Suitable Boy'?", a:"Vikram Seth", o:["Vikram Seth", "Amitav Ghosh", "Upamanyu Chatterjee", "Rohinton Mistry"]},
+    {q:"Which book is a collection of Buddhist birth stories?", a:"Jataka Tales", o:["Jataka Tales", "Panchatantra", "Hitopadesha", "Kathasaritsagara"]},
+    {q:"Who wrote the poem 'Jhansi Ki Rani'?", a:"Subhadra Kumari Chauhan", o:["Subhadra Kumari Chauhan", "Mahadevi Verma", "Sarojini Naidu", "Nirmala Deshpande"]},
+    {q:"Which Marathi author wrote 'Panipat'?", a:"Vishwas Patil", o:["Vishwas Patil", "Ranjit Desai", "Shivaji Sawant", "N.S. Inamdar"]},
+    {q:"Who authored 'The Immortals of Meluha'?", a:"Amish Tripathi", o:["Amish Tripathi", "Ashwin Sanghi", "Durjoy Datta", "Ravinder Singh"]},
+    {q:"Which ancient Indian collection of fables features animal characters?", a:"Panchatantra", o:["Panchatantra", "Jataka", "Hitopadesha", "Aesop"]},
+    {q:"Who wrote the Marathi play 'Ghashiram Kotwal'?", a:"Vijay Tendulkar", o:["Vijay Tendulkar", "P.L. Deshpande", "Mahesh Elkunchwar", "Satish Alekar"]},
+    {q:"'The Shadow Lines' is a famous work by which author?", a:"Amitav Ghosh", o:["Amitav Ghosh", "Vikram Seth", "Salman Rushdie", "Kiran Desai"]},
+    {q:"Who wrote 'My Experiments with Truth'?", a:"Mahatma Gandhi", o:["Mahatma Gandhi", "Jawaharlal Nehru", "Subhash Chandra Bose", "Lal Bahadur Shastri"]},
+    {q:"Which book did Geetanjali Shree win the International Booker Prize for?", a:"Tomb of Sand", o:["Tomb of Sand", "The Seven Moons of Maali Almeida", "The Promise", "Shuggie Bain"]},
+    {q:"Who is the author of 'Chitra' and 'Gora'?", a:"Rabindranath Tagore", o:["Rabindranath Tagore", "Bankim Chandra", "Sarat Chandra", "Premchand"]},
+    {q:"'Shala' is a famous Marathi novel by whom?", a:"Milind Bokil", o:["Milind Bokil", "V.P. Kale", "Anand Yadav", "Ratnakar Matkari"]},
+    {q:"Who wrote the Hindi classic 'Madhushala'?", a:"Harivansh Rai Bachchan", o:["Harivansh Rai Bachchan", "Gulzar", "Javed Akhtar", "Sahir Ludhianvi"]},
+    {q:"Which ancient sage wrote the 'Yoga Sutras'?", a:"Patanjali", o:["Patanjali", "Kapila", "Vyasa", "Gautama"]},
+    {q:"Who wrote the English novel 'Untouchable'?", a:"Mulk Raj Anand", o:["Mulk Raj Anand", "R.K. Narayan", "Raja Rao", "Kamala Markandaya"]},
+    {q:"Which Marathi author is known for his 'Vapurza'?", a:"V.P. Kale", o:["V.P. Kale", "Pu La Deshpande", "G.A. Kulkarni", "Shankar Patil"]},
+    {q:"Who wrote 'The Blue Umbrella'?", a:"Ruskin Bond", o:["Ruskin Bond", "R.K. Narayan", "Sudha Murty", "Anita Desai"]},
+    {q:"Which female author wrote 'Interpreter of Maladies'?", a:"Jhumpa Lahiri", o:["Jhumpa Lahiri", "Kiran Desai", "Arundhati Roy", "Anita Desai"]},
+    {q:"Who is the author of 'The Great Indian Novel'?", a:"Shashi Tharoor", o:["Shashi Tharoor", "Vikram Seth", "Amitav Ghosh", "Shobhaa De"]},
+    {q:"Which Marathi play is based on the life of a stage actor?", a:"Natsamrat", o:["Natsamrat", "Katyar Kaljat Ghusli", "To Mee Navhech", "Ti Phulrani"]},
+    {q:"Who wrote the epic 'Ramcharitmanas'?", a:"Tulsidas", o:["Tulsidas", "Valmiki", "Surdas", "Kabir"]},
+    {q:"Which Indian author wrote 'A Fine Balance'?", a:"Rohinton Mistry", o:["Rohinton Mistry", "Vikram Seth", "Amitav Ghosh", "Aravind Adiga"]},
+    {q:"Who is the goddess of learning and arts in Hindu literature?", a:"Saraswati", o:["Saraswati", "Lakshmi", "Parvati", "Durga"]},
+    {q:"Which Peshwa built the Shaniwar Wada in Pune?", a:"Bajirao I", o:["Bajirao I", "Balaji Vishwanath", "Madhavrao", "Nanasaheb"]},
+    {q:"Who is known as the 'Mother of Indian Orphans'?", a:"Sindhutai Sapkal", o:["Sindhutai Sapkal", "Savitribai Phule", "Baba Amte", "Medha Patkar"]},
+    {q:"Which Marathi poet wrote the famous poem 'Kana'?", a:"Kusumagraj", o:["Kusumagraj", "Vinda Karandikar", "B.B. Borkar", "Mangesh Padgaonkar"]},
+    {q:"Which fort's siege lasted for 9 years against the Mughals?", a:"Jinjii", o:["Jinji", "Raigad", "Panhala", "Vishalgad"]},
+    {q:"The 'Mastani Mahal' was part of which historic structure?", a:"Shaniwar Wada", o:["Shaniwar Wada", "Aga Khan Palace", "Lal Mahal", "Vishrambaug Wada"]},
+    {q:"Which district in Maharashtra is famous for 'Jalgaon' bananas?", a:"Jalgaon", o:["Jalgaon", "Nashik", "Dhule", "Nandurbar"]},
+    {q:"Who was the first Maratha to lead an expedition to Attock (modern-day Pakistan)?", a:"Raghunathrao", o:["Raghunathrao", "Chimaji Appa", "Sadashivrao Bhau", "Malhar Rao Holkar"]},
+    {q:"Which river originates at Mahabaleshwar along with 4 others?", a:"Krishna", o:["Krishna", "Godavari", "Koyna", "Venna"]},
+    {q:"Who is known as 'The Grand Old Man of India', born in Mumbai?", a:"Dadabhai Naoroji", o:["Dadabhai Naoroji", "Pherozeshah Mehta", "Dinshaw Wacha", "W.C. Bonnerjee"]},
+    {q:"Which fort is famous for its massive 'Kalavantin Durg' pinnacle?", a:"Prabalmachi", o:["Prabalmachi", "Irshalgad", "Karnala", "Duke's Nose"]},
+    {q:"What was the real name of the saint 'Gadge Maharaj'?", a:"Debuji Zhingraji Janorkar", o:["Debuji Zhingraji Janorkar", "Manik Banduji Ingale", "Tukaram Bhaurao Sathe", "Namdev Mahadev Mahar"]},
+    {q:"Which battle in 1761 was a turning point for the Maratha Empire?", a:"Third Battle of Panipat", o:["Third Battle of Panipat", "Battle of Rakshasbhuvan", "Battle of Kharda", "Battle of Palkhed"]},
+    {q:"The 'Global Vipassana Pagoda' is located near which suburb of Mumbai?", a:"Gorai", o:["Gorai", "Bandra", "Colaba", "Borivali"]},
+    {q:"Who founded the 'Seva Sadan' in Pune?", a:"Ramabai Ranade", o:["Ramabai Ranade", "Savitribai Phule", "Pandita Ramabai", "Tarabai Shinde"]},
+    {q:"Which city is called the 'Kashi of the South'?", a:"Paithan", o:["Paithan", "Nashik", "Alandi", "Tuljapur"]},
+    {q:"The 'Gateway of India' design is influenced by which architectural style?", a:"Indo-Saracenic", o:["Indo-Saracenic", "Gothic", "Mughal", "Doric"]},
+    {q:"Who was the brave lady who fought a leopard to save her child (Hirkani)?", a:"Hira", o:["Hira", "Jija", "Tara", "Radha"]},
+    {q:"Which fort has the 'Dargah of Peer Hazrat Haji Malang'?", a:"Malanggad", o:["Malanggad", "Lohagad", "Visapur", "Karnala"]},
+    {q:"Which Marathi writer won the Jnanpith Award for 'Yayati'?", a:"V.S. Khandekar", o:["V.S. Khandekar", "Vinda Karandikar", "Bhalchandra Nemade", "Kusumagraj"]},
+    {q:"Which city is known as the 'City of Gates'?", a:"Sambhaji Nagar", o:["Sambhaji Nagar", "Pune", "Nashik", "Nagpur"]},
+    {q:"Who was the supreme commander of the Maratha forces at Panipat III?", a:"Sadashivrao Bhau", o:["Sadashivrao Bhau", "Vishwasrao", "Malhar Rao Holkar", "Mahadji Shinde"]},
+    {q:"The 'Aga Khan Palace' in Pune served as a prison for whom?", a:"Mahatma Gandhi", o:["Mahatma Gandhi", "Lokmanya Tilak", "Savarkar", "Nehru"]},
+    {q:"Which fort is known for its 'Machi' and 'Bale Killa' on different levels?", a:"Rajgad", o:["Rajgad", "Torna", "Lohagad", "Sinhagad"]},
+    {q:"Who is the creator of the famous character 'Chimanrao'?", a:"C.V. Joshi", o:["C.V. Joshi", "Pu La Deshpande", "P.K. Atre", "D.M. Mirasdar"]},
+    {q:"Which port was known as the 'Black Pagoda' of the Maratha Navy?", a:"Vijaydurg", o:["Vijaydurg", "Sindhudurg", "Janjira", "Arnala"]},
+    {q:"In which year did the British finally defeat the Peshwas?", a:"1818", o:["1818", "1857", "1761", "1803"]},
+    // --- SHIVAJI MAHARAJ & THE MARATHA EMPIRE ---
+    {q:"What was the name of Chhatrapati Shivaji Maharaj's mother?", a:"Jijabai", o:["Jijabai", "Tarabai", "Putlabai", "Soyarabai"]},
+    {q:"Which fort was Shivaji Maharaj's first conquest at the age of 16?", a:"Torna", o:["Torna", "Raigad", "Shivneri", "Purandar"]},
+    {q:"Who was the brave commander who sacrificed his life to win Sinhagad?", a:"Tanaji Malusare", o:["Tanaji Malusare", "Baji Prabhu Deshpande", "Netaji Palkar", "Murarbaji"]},
+    {q:"What was the name of Shivaji Maharaj's horse?", a:"Krishna", o:["Krishna", "Chetak", "Moti", "Pawan"]},
+    {q:"The historic 'Battle of Pratapgad' was fought against which general?", a:"Afzal Khan", o:["Afzal Khan", "Shaista Khan", "Aurangzeb", "Siddi Jauhar"]},
+    {q:"Which saint was a contemporary and spiritual guide to Shivaji Maharaj?", a:"Sant Tukaram", o:["Sant Tukaram", "Sant Dnyaneshwar", "Sant Eknath", "Sant Namdev"]},
+    {q:"What was the name of the Maratha Navy's first admiral?", a:"Kanhoji Angre", o:["Kanhoji Angre", "Maynak Bhandari", "Lai Patil", "Hambirrao Mohite"]},
+    {q:"Which fort is famously known as the 'Gibraltar of the East'?", a:"Raigad", o:["Raigad", "Janjira", "Sindhudurg", "Pratapgad"]},
+    {q:"Who was the daughter-in-law of Shivaji Maharaj who led the Maratha resistance after his death?", a:"Maharani Tarabai", o:["Maharani Tarabai", "Ahilyabai Holkar", "Jijabai", "Yesubai"]},
+    {q:"Where is the samadhi of Chhatrapati Sambhaji Maharaj located?", a:"Tulapur", o:["Tulapur", "Raigad", "Sangameshwar", "Vadhu Budruk"]},
+    {q:"Which fort is unique because it is built in the middle of the Arabian Sea?", a:"Janjira", o:["Janjira", "Lohagad", "Rajmachi", "Tikona"]},
+    {q:"Which fort is known for its three concentric walls (Zunjar Machi)?", a:"Torna", o:["Torna", "Rajgad", "Pratapgad", "Sinhagad"]},
+    {q:"Which fort has the famous 'Bale Killa' and was the capital before Raigad?", a:"Rajgad", o:["Rajgad", "Torna", "Lohagad", "Visapur"]},
+    {q:"Where can you find the famous 'Konkan Kada'?", a:"Harishchandragad", o:["Harishchandragad", "Ratangad", "Kalsubai", "Salher"]},
+    {q:"Which is the highest peak in Maharashtra?", a:"Kalsubai", o:["Kalsubai", "Salher", "Mahabaleshwar", "Saptashrungi"]},
+    {q:"The famous 'Vinchukata' point is located on which fort?", a:"Lohagad", o:["Lohagad", "Visapur", "Tikona", "Korigad"]},
+    {q:"Which city is known as the 'Wine Capital of India'?", a:"Nashik", o:["Nashik", "Pune", "Nagpur", "Aurangabad"]},
+    {q:"Which river is often called the 'Dakshin Ganga'?", a:"Godavari", o:["Godavari", "Krishna", "Koyna", "Tapi"]},
+    {q:"The Ajanta and Ellora caves are dedicated to which religions?", a:"Buddhism, Hinduism & Jainism", o:["Buddhism, Hinduism & Jainism", "Only Buddhism", "Only Hinduism", "Buddhism & Islam"]},
+    {q:"Which city was the seat of the Peshwas?", a:"Pune", o:["Pune", "Satara", "Kolhapur", "Nagpur"]},
+    {q:"Who is known as the 'Krantijyoti' of Maharashtra?", a:"Savitribai Phule", o:["Savitribai Phule", "Ramabai Ranade", "Tarabai Shinde", "Anandi Gopal Joshi"]},
+    {q:"Who was the first woman doctor of India, born in Maharashtra?", a:"Anandi Gopal Joshi", o:["Anandi Gopal Joshi", "Kadambini Ganguly", "Muthulakshmi Reddy", "Rukhmabai"]},
+    {q:"Which great leader was born in Mahad and fought for social equality?", a:"Dr. B.R. Ambedkar", o:["Dr. B.R. Ambedkar", "Jyotiba Phule", "Shahu Maharaj", "Vinoba Bhave"]},
+    {q:"The 'Ganpati Utsav' was popularized for public celebration by whom?", a:"Lokmanya Tilak", o:["Lokmanya Tilak", "Agarkar", "Gokhale", "Savarkar"]},
+    {q:"Who was the first Chief Minister of Maharashtra?", a:"Yashwantrao Chavan", o:["Yashwantrao Chavan", "Sharad Pawar", "Vasantrao Naik", "Babasaheb Bhosale"]},
+    {q:"Which folk dance is most popular in Maharashtra?", a:"Lavani", o:["Lavani", "Kathak", "Ghoomar", "Garba"]},
+    {q:"What is the traditional Maharashtrian saree called?", a:"Paithani", o:["Paithani", "Kanjivaram", "Chanderi", "Banarasi"]},
+    {q:"The 'Pandharpur Wari' is dedicated to which deity?", a:"Lord Vitthal", o:["Lord Vitthal", "Lord Shiva", "Lord Ganesha", "Lord Rama"]},
+    {q:"Which instrument is essential in a 'Powada' performance?", a:"Duff", o:["Duff", "Tabla", "Sitar", "Flute"]},
+    {q:"Which sweet dish is a must during Ganesh Chaturthi?", a:"Modak", o:["Modak", "Puran Poli", "Shrikhand", "Gulab Jamun"]},
+    {q:"The Gateway of India was built to welcome which British Monarch?", a:"George V", o:["George V", "Edward VII", "Victoria", "Elizabeth II"]},
+    {q:"In which year was the state of Maharashtra formed?", a:"1960", o:["1960", "1950", "1947", "1966"]},
+    {q:"Which Marathi saint wrote the 'Bhavartha Deepika'?", a:"Sant Dnyaneshwar", o:["Sant Dnyaneshwar", "Sant Tukaram", "Sant Ramdas", "Sant Namdev"]},
+    {q:"Which city is famous for its Oranges?", a:"Nagpur", o:["Nagpur", "Ratnagiri", "Jalgaon", "Solapur"]},
+    {q:"Who was the spiritual guru of Shivaji Maharaj who wrote 'Dasbodh'?", a:"Samarth Ramdas", o:["Samarth Ramdas", "Sant Tukaram", "Sant Eknath", "Sant Gadge Baba"]},
+    {q:"Which fort's name was changed from Kondhana to Sinhagad?", a:"Sinhagad", o:["Sinhagad", "Purandar", "Lohagad", "Pratapgad"]},
+    {q:"Which Peshwa is known for never losing a battle?", a:"Bajirao I", o:["Bajirao I", "Balaji Vishwanath", "Madhavrao", "Nanasaheb"]},
+    {q:"The 'Bibi Ka Maqbara' is located in which city?", a:"Sambhaji Nagar", o:["Sambhaji Nagar", "Pune", "Mumbai", "Nagpur"]},
+    {q:"Which Marathi king is known for his contribution to Thanjavur (Tamil Nadu)?", a:"Venkoji Raje", o:["Venkoji Raje", "Shahaji Raje", "Shivaji Raje", "Sambhaji Raje"]},
+    {q:"Who was the first woman ruler of the Maratha state?", a:"Tarabai", o:["Tarabai", "Jijabai", "Ahilyabai", "Yesubai"]},
+    {q:"Which city is known as the 'Oxford of the East'?", a:"Pune", o:["Pune", "Mumbai", "Nashik", "Nagpur"]},
+    {q:"The 'Global Vipassana Pagoda' is located in which city?", a:"Mumbai", o:["Mumbai", "Pune", "Nashik", "Nagpur"]},
+    {q:"Which fort was the birthplace of Chhatrapati Shivaji Maharaj?", a:"Shivneri", o:["Shivneri", "Raigad", "Torna", "Purandar"]},
+    {q:"Who was the first Indian to win an individual Olympic medal, born in Maharashtra?", a:"K.D. Jadhav", o:["K.D. Jadhav", "Milkha Singh", "Dhyan Chand", "Abhinav Bindra"]},
+    {q:"The 'Koyna Dam' is built in which district?", a:"Satara", o:["Satara", "Sangli", "Kolhapur", "Ratnagiri"]},
+    {q:"Which fort is famous for its entrance called 'Maha Darwaja'?", a:"Raigad", o:["Raigad", "Pratapgad", "Sindhudurg", "Janjira"]},
+    {q:"Which port was built by Shivaji Maharaj to challenge the Siddhis?", a:"Sindhudurg", o:["Sindhudurg", "Vijaydurg", "Suvarnadurg", "Khanderi"]},
+    {q:"Who started the newspaper 'Kesari'?", a:"Lokmanya Tilak", o:["Lokmanya Tilak", "Agarkar", "Chiplunkar", "Ranade"]},
+    {q:"Which district is famous for Alphonso (Hapus) Mangoes?", a:"Ratnagiri", o:["Ratnagiri", "Sindhudurg", "Raigad", "Thane"]},
+    {q:"What is the official state animal of Maharashtra?", a:"Shekru", o:["Shekru", "Tiger", "Leopard", "Gaur"]}
+];
+
+  
+  
+  
+  
+  const words = [
+    "soulmate", "forever", "cherish", "divine", "promise", "eternity", "romance", "belong", 
+    "treasure", "miracle", "passion", "starlight", "serendipity", "beloved", "kindness", 
+    "patience", "bravery", "strength", "radiance", "whisper", "harmony", "destiny", 
+    "sunshine", "blossom", "infinite", "embrace", "loyalty", "graceful", "purest", 
+    "magical", "heavens", "journey", "partner", "uniting", "warmth", "comfort", "soulmate", "forever", "cherish", "divine", "promise", "eternity", "romance", "belong", "treasure", "miracle", "passion", "starlight", "serendipity", "beloved", "whisper", "destiny", "sunshine", "blossom", "infinite", "embrace", "loyalty", "graceful", "purest", "magical", "heavens", "journey", "partner", "uniting", "warmth", "comfort", "inspire", "believe", "growing", "darling", "queenly", "freedom", "flutter", "breathtaking", "laughter", "honesty", "peaceful", "dreamy", "together", "always", "adoration", "kindred", "flawless", "complete", "rapture", "enchanted", "bravery", "strength", "radiance", "patience", "success", "ambition", "fearless", "warrior", "triumph", "courage", "brightest", "unstoppable", "limitless", "thriving", "focused", "capable", "brilliant", "authentic", "worthy", "powerful", "resilient", "wisdom", "vision", "victory", "support", "healing", "guiding", "balance", "clarity", "purpose", "growth", "creative", "dynamic", "shining", "boldness", "chuckles", "giggles", "sunflower", "cupcake", "sparkle", "bubbles", "mischief", "twinkle", "playful", "sunbeams", "rainbow", "peachy", "button", "dimples", "snuggles", "joyful", "delight", "harmony", "breeze", "stardust", "glimmer", "dancing", "cloudy", "velvet", "cookie", "honey", "buttercup", "pixie", "essence", "eternal", "oneness", "sacred", "gratitude", "blessing", "sanctuary", "serene", "tranquil", "universe", "cosmos", "gateway", "breathe", "awakening", "presence", "mindful", "thoughtful", "purity", "gentle", "softness", "refuge", "anchor", "compass", "horizon", "vibration", "reflection", "lovelight", "paramour", "devotion", "sweetheart", "amorous", "yearning", "affinity", "courtship", "gallant", "tender", "fairytale", "moonbeam", "nostalgia", "ballad", "sonnet", "poetry", "luminous", "ethereal", "sublime", "magnetic", "inspire", "believe", "growing", "darling", "queenly", "freedom", "flutter", "admire", "adorable", "allure", "angelic", "attuned", "beauty", "beaming", "blissful", "boundless", "calmness", "captivate", "carefree", "celestial", "charming", "classic", "cozy", "dazzle", "dedicated", "delicate", "devoted", "earnest", "ebullient", "effervescent", "elegant", "elated", "eloquent", "empathy", "endless", "endearing", "energetic", "enlighten", "entwined", "exquisite", "fabulous", "faithful", "favorable", "favorite", "felicity", "firefly", "fondness", "fortunate", "friendly", "genuine", "giving", "gleaming", "glorious", "goodness", "grateful", "happiness", "haven", "heartfelt", "heavenly", "hopeful", "hugged", "ideal", "illumine", "immense", "incandescent", "initials", "innocent", "inseparable", "insight", "integrity", "intense", "intuitive", "inviting", "iridescent", "jovial", "joyous", "jubilant", "kindness", "kissable", "knowledge", "lantern", "laughing", "leading", "legendary", "liberty", "lighthearted", "lovable", "loving", "luckiest", "lustrous", "magnanimous", "magnetic", "majestic", "marvelous", "meaning", "mellow", "melody", "memorize", "merit", "misty", "modest", "morning", "natural", "nurture", "noble", "nurturing", "oasis", "oceanic", "optimism", "original", "overjoyed", "paradise", "passionate", "patient", "peace", "perceptive", "perfect", "persistent", "petals", "phenomenal", "pinnacle", "pleasant", "poetic", "polite", "positive", "precious", "prestige", "profound", "prosper", "protective", "proudly", "radiant", "rapturous", "reassurance", "rejoice", "relaxed", "reliable", "remarkable", "renewal", "respect", "revelry", "rhythm", "romantic", "rooted", "safety", "savory", "season", "secure", "selfless", "sensation", "sensible", "sentiment", "shimmer", "sincere", "skillful", "smiling", "smooth", "solace", "sparkling", "special", "spirit", "splendid", "spontaneous", "stability", "steadfast", "stellar", "stunning", "successful", "summit", "superb", "supportive", "supreme", "sweetness", "symbol", "talented", "temple", "thankful", "thoughtful", "thrilled", "timeless", "togetherness", "tolerant", "touching", "traditional", "tranquility", "transform", "traveler", "truthful", "twilight", "ultimate", "unconditional", "understanding", "unique", "unity", "uplift", "valiant", "valuable", "vibrant", "victory", "virtue", "vivacious", "vivid", "vulnerable", "wakeful", "warmhearted", "wealthy", "welcoming", "wholehearted", "willing", "winsome", "wonderful", "wondrous", "worship", "worthwhile", "youthful", "zealous", "zenith", "zestful",
+    "breathtaking", "laughter", "honesty", "peaceful", "dreamy", "together", "always"
+];
+
+  
+
+const audio = document.getElementById('bgMusic');
+let currentAns = "", currentMode = "";
+
+// --- MUSIC ENGINE ---
+audio.onended = () => playRandom();
+function playRandom() { 
+    audio.src = playlist[Math.floor(Math.random()*playlist.length)]; 
+    audio.play().catch(() => {});
+    document.getElementById('musicBtn').innerText = '🔊';
+}
+function toggleMusic() { 
+    if(audio.paused) { if(!audio.src) playRandom(); else { audio.play(); document.getElementById('musicBtn').innerText = '🔊'; } }
+    else { audio.pause(); document.getElementById('musicBtn').innerText = '🔇'; }
+}
+
+// --- DRAWER ---
+function toggleDrawer() {
+    const drawer = document.getElementById('messageDrawer');
+    if(drawer.style.bottom === "0px") drawer.style.bottom = "-100%";
+    else {
+        const msg = guestMessages[Math.floor(Math.random()*guestMessages.length)];
+        document.getElementById('drawerContent').innerHTML = `<p style="margin-bottom:12px;">"${msg.msg}"</p><span style="color:var(--main-lilac); font-size:1rem; font-weight:700;">— ${msg.from}</span>`;
+        drawer.style.bottom = "0px";
+    }
+}
+
+// --- CORE LOGIC ---
+function checkDates() {
+    const now = new Date();
+    const d = now.getDate(), m = now.getMonth()+1, y = now.getFullYear();
+    const alert = document.getElementById('specialAlert');
+    const todayStr = `${d}/${m}/${y}`;
+
+    if(todayStr === "31/12/2025") alert.innerText = "A new journey begins, Pariii. Season 3 starts now. Enjoy every moment of your life in Bangalore and be proud of yourself. ✈️❤️";
+    else if(todayStr === "24/3/2026") alert.innerText = "3 Years of Us. 🌹 My heart beats only to your name. Happy Anniversary, My Queen.";
+    else if(todayStr === "30/3/2026") alert.innerText = "Happy Birthday, My Parii! 🎂 Rosh here—every breath I take is a thank you for your birth. You are my home. ❤️";
+    else if(d === 24) {
+        let monthsTotal = (y - 2023) * 12 + (m - 3);
+        alert.innerText = `Happy Anniversary! 💖 Month ${monthsTotal}. We are growing together every second. How does it feel?`;
+    }
+}
+
+function updateStreak() {
+    const today = new Date().toDateString();
+    let last = localStorage.getItem('p_lp_v15');
+    let streak = parseInt(localStorage.getItem('p_st_v15') || 0);
+    if(last !== today) {
+        const yes = new Date(); yes.setDate(yes.getDate()-1);
+        if(last === yes.toDateString()) streak++; else streak = 1;
+        localStorage.setItem('p_lp_v15', today);
+        localStorage.setItem('p_st_v15', streak);
+    }
+    document.getElementById('streakDisp').innerText = streak;
+    document.getElementById('ptsDisp').innerText = localStorage.getItem('p_pts_v15') || 0;
+}
+
+function updateMenu() {
+    const today = new Date().toDateString();
+    let state = JSON.parse(localStorage.getItem('p_save_v15') || '{"date":""}');
+    if(state.date !== today) state = {date:today, lang:false, movies:false, history:false};
+    localStorage.setItem('p_save_v15', JSON.stringify(state));
+
+    let completed = 0;
+    ['lang','movies','history'].forEach(m => {
+        const c = document.getElementById('cat-'+m);
+        if(state[m]) { c.classList.add('locked'); c.querySelector('.status-slot').innerText='✅'; c.onclick=null; completed++; }
+        else { c.classList.remove('locked'); c.querySelector('.status-slot').innerText='🔒'; c.onclick=()=>startMode(m); }
+    });
+
+    const poemDiv = document.getElementById('dailyPoem');
+    const p = library[Math.floor(Math.random()*library.length)];
+
+    if(completed === 3) {
+        poemDiv.innerHTML = `
+            <div style="background: white; padding: 25px; border-radius: 30px; border: 2px dashed var(--main-lilac); margin-top: 10px;">
+                <p style="font-weight: 700; color: var(--deep-purple); margin: 0; font-size: 1.1rem;">All rounds done for today! ✨</p>
+                <p style="font-size: 0.95rem; color: var(--main-lilac); margin-top: 8px; font-weight: 600;">See you tomorrow, Pariii. Sleep well! ❤️</p>
+            </div>
+            <div style="margin-top: 25px; opacity: 0.6;">
+                <div class="v-m">${p.m}</div><div class="v-e">${p.e}</div>
+            </div>`;
+    } else {
+        poemDiv.innerHTML = `<div class="v-m">${p.m}</div><div class="v-kn">${p.kn}</div><div class="v-e">${p.e}</div>`;
+    }
+    show('home');
+}
+
+function startMode(m) {
+    currentMode = m; show('game');
+    document.getElementById('langUI').style.display = m==='lang'?'block':'none';
+    document.getElementById('quizUI').style.display = m!=='lang'?'block':'none';
+    if(m==='lang') {
+        let w = words[Math.floor(Math.random()*words.length)]; currentAns = w;
+        document.getElementById('scrambled').innerText = w.slice(0,-2).split('').reverse().join('') + w.slice(-2);
+        document.getElementById('ans').value = "";
+    } else {
+        let pool = m==='movies'?movies:history; let q = pool[Math.floor(Math.random()*pool.length)];
+        currentAns = q.a; document.getElementById('qText').innerText = q.q;
+        document.getElementById('opts').innerHTML = q.o.map(o => `<button style="background:white; color:var(--deep-purple); margin-bottom:15px; border:2px solid #f3f0ff;" onclick="finish('${o===currentAns}')">${o}</button>`).join('');
+    }
+}
+
+function checkAnswer() { finish(document.getElementById('ans').value.toLowerCase().trim() === currentAns.toLowerCase()); }
+
+function finish(correct) {
+    show('result');
+    if(String(correct) === 'true') {
+        let state = JSON.parse(localStorage.getItem('p_save_v15'));
+        if(!state[currentMode]) {
+            let p = parseInt(localStorage.getItem('p_pts_v15') || 0) + 100;
+            localStorage.setItem('p_pts_v15', p);
+            document.getElementById('ptsDisp').innerText = p;
+        }
+        state[currentMode] = true; localStorage.setItem('p_save_v15', JSON.stringify(state));
+        document.getElementById('resH').innerText = "Magnificent, Pariii ✨";
+    } else {
+        document.getElementById('resH').innerText = "Try again, love 🌸";
+    }
+    const p = library[Math.floor(Math.random()*library.length)];
+    document.getElementById('resPoem').innerHTML = `<div class="v-m">${p.m}</div><div class="v-kn">${p.kn}</div><div class="v-e">${p.e}</div>`;
+}
+
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function goHome() { updateMenu(); }
+
+function init() {
+    document.getElementById('dateDisp').innerText = new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+    setInterval(() => {
+        const h = document.createElement('div'); h.className='heart'; h.innerHTML='♥';
+        h.style.left = Math.random() * 100 + 'vw'; h.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 8000);
+    }, 1200);
+    checkDates(); updateStreak(); updateMenu();
+}
+init();
+</script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
